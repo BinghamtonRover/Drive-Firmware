@@ -3,7 +3,7 @@
 
 #ifndef PB_DRIVE_PB_H_INCLUDED
 #define PB_DRIVE_PB_H_INCLUDED
-#include <pb.h>
+#include "utils/pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
@@ -17,24 +17,27 @@ typedef struct _DriveCommand {
     float left;
     /* Speed of the right wheels, as a percentage of [throttle]. */
     float right;
-    /* X */
-    bool set_throttle;
-    /* X */
+    /* Indicates that [left] = 0 is valid, even though 0 usually means no value. */
     bool set_left;
-    /* X */
+    /* Indicates that [right] = 0 is valid, even though 0 usually means no value. */
     bool set_right;
+    /* Indicates that [throttle] = 0 is valid, even though 0 usually means no value. */
+    bool set_throttle;
 } DriveCommand;
 
 typedef struct _DriveData {
     /* The max speed, as a percentage of the rover's possible speed. */
-    bool has_throttle;
     float throttle;
     /* Speed of the left wheels, as a percentage of [throttle]. */
-    bool has_left;
     float left;
     /* Speed of the right wheels, as a percentage of [throttle]. */
-    bool has_right;
     float right;
+    /* Indicates that [left] = 0 is valid, even though 0 usually means no value. */
+    bool set_left;
+    /* Indicates that [right] = 0 is valid, even though 0 usually means no value. */
+    bool set_right;
+    /* Indicates that [throttle] = 0 is valid, even though 0 usually means no value. */
+    bool set_throttle;
 } DriveData;
 
 
@@ -44,36 +47,42 @@ extern "C" {
 
 /* Initializer values for message structs */
 #define DriveCommand_init_default                {0, 0, 0, 0, 0, 0}
-#define DriveData_init_default                   {false, 0, false, 0, false, 0}
+#define DriveData_init_default                   {0, 0, 0, 0, 0, 0}
 #define DriveCommand_init_zero                   {0, 0, 0, 0, 0, 0}
-#define DriveData_init_zero                      {false, 0, false, 0, false, 0}
+#define DriveData_init_zero                      {0, 0, 0, 0, 0, 0}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define DriveCommand_throttle_tag                1
 #define DriveCommand_left_tag                    2
 #define DriveCommand_right_tag                   3
-#define DriveCommand_set_throttle_tag            4
-#define DriveCommand_set_left_tag                5
-#define DriveCommand_set_right_tag               6
+#define DriveCommand_set_left_tag                4
+#define DriveCommand_set_right_tag               5
+#define DriveCommand_set_throttle_tag            6
 #define DriveData_throttle_tag                   1
 #define DriveData_left_tag                       2
 #define DriveData_right_tag                      3
+#define DriveData_set_left_tag                   4
+#define DriveData_set_right_tag                  5
+#define DriveData_set_throttle_tag               6
 
 /* Struct field encoding specification for nanopb */
 #define DriveCommand_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, FLOAT,    throttle,          1) \
 X(a, STATIC,   SINGULAR, FLOAT,    left,              2) \
 X(a, STATIC,   SINGULAR, FLOAT,    right,             3) \
-X(a, STATIC,   SINGULAR, BOOL,     set_throttle,      4) \
-X(a, STATIC,   SINGULAR, BOOL,     set_left,          5) \
-X(a, STATIC,   SINGULAR, BOOL,     set_right,         6)
+X(a, STATIC,   SINGULAR, BOOL,     set_left,          4) \
+X(a, STATIC,   SINGULAR, BOOL,     set_right,         5) \
+X(a, STATIC,   SINGULAR, BOOL,     set_throttle,      6)
 #define DriveCommand_CALLBACK NULL
 #define DriveCommand_DEFAULT NULL
 
 #define DriveData_FIELDLIST(X, a) \
-X(a, STATIC,   OPTIONAL, FLOAT,    throttle,          1) \
-X(a, STATIC,   OPTIONAL, FLOAT,    left,              2) \
-X(a, STATIC,   OPTIONAL, FLOAT,    right,             3)
+X(a, STATIC,   SINGULAR, FLOAT,    throttle,          1) \
+X(a, STATIC,   SINGULAR, FLOAT,    left,              2) \
+X(a, STATIC,   SINGULAR, FLOAT,    right,             3) \
+X(a, STATIC,   SINGULAR, BOOL,     set_left,          4) \
+X(a, STATIC,   SINGULAR, BOOL,     set_right,         5) \
+X(a, STATIC,   SINGULAR, BOOL,     set_throttle,      6)
 #define DriveData_CALLBACK NULL
 #define DriveData_DEFAULT NULL
 
@@ -86,7 +95,7 @@ extern const pb_msgdesc_t DriveData_msg;
 
 /* Maximum encoded size of messages (where known) */
 #define DriveCommand_size                        21
-#define DriveData_size                           15
+#define DriveData_size                           21
 
 #ifdef __cplusplus
 } /* extern "C" */

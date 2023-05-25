@@ -1,53 +1,88 @@
-#include <BURT_can.h>
-#include <BURT_proto.h>
-#include <BURT_serial.h>
-
+#include "src/utils/BURT_utils.h"
 #include "src/BURT_vesc.h"
 #include "src/drive.pb.h"
 
 #define DRIVE_COMMAND_ID 0x53
 #define DRIVE_DATA_ID    0x14
 
-#define LEFT_PIN  2
-#define RIGHT_PIN 4
-
-BurtSerial serial(handleDriveCommand);
-VescDriver left(LEFT_PIN), right(RIGHT_PIN);
+VescDriver left1(1);
+VescDriver left2(3);
+VescDriver left3(4);
+VescDriver right1(5);
+VescDriver right2(6);
+VescDriver right3(7);
 float leftVelocity, rightVelocity, throttle;
+int canSendInterval = 500;
+unsigned long nextSendTime;
 
 void handleDriveCommand(const uint8_t* data, int length) {
 	auto command = BurtProto::decode<DriveCommand>(data, length, DriveCommand_fields);
-	if (command.set_throttle) throttle = command.throttle;
-	if (command.set_left) leftVelocity = command.left;
-	if (command.set_right) rightVelocity = command.right;
+	if (command.set_throttle) {
+    if (command.throttle != 0) { Serial.print("Throttle: "); Serial.println(command.throttle); }
+    throttle = command.throttle;
+  }
+	if (command.set_left) {
+    if (command.left != 0) { Serial.print("Left: "); Serial.println(command.left); }
+		leftVelocity = command.left;
+	}
+	if (command.set_right) {
+    if (command.right != 0) { Serial.print("Right: "); Serial.println(command.right); }
+		rightVelocity = command.right;
+	}
 
-	left.setVelocity(leftVelocity, throttle);
-	right.setVelocity(rightVelocity, throttle);
-	// delay(200);  // don't thrash the wheels
+	left1.setVelocity(leftVelocity, throttle);
+	left2.setVelocity(leftVelocity, throttle);
+	left3.setVelocity(leftVelocity, throttle);
+	right1.setVelocity(rightVelocity, throttle);
+	right2.setVelocity(rightVelocity, throttle);
+	right3.setVelocity(rightVelocity, throttle);
 }
 
+BurtSerial serial(handleDriveCommand, Device::Device_DRIVE);
+BurtCan can(DRIVE_COMMAND_ID, handleDriveCommand);
+
 void sendData() {
-	DriveData data1, data2, data3;
-	data1.left = leftVelocity;
-	data2.right = rightVelocity;
-	data3.throttle = throttle;
-	BurtCan::send(DRIVE_DATA_ID, DriveData_fields, &data1);
-	BurtCan::send(DRIVE_DATA_ID, DriveData_fields, &data2);
-	BurtCan::send(DRIVE_DATA_ID, DriveData_fields, &data3);
-  // Serial.println("Sent data");
+  if (millis() < nextSendTime) return;
+	DriveData data = DriveData_init_zero;
+	data.left = leftVelocity;
+  data.set_left = true;
+	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
+
+	data = DriveData_init_zero;
+	data.right = rightVelocity;
+  data.set_right = true;
+	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
+
+	data = DriveData_init_zero;
+	data.throttle = throttle;
+  data.set_throttle = true;
+	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
+
+  nextSendTime = millis() + canSendInterval;
 }
 
 void setup() {
 	Serial.begin(9600);
-	BurtCan::setup();
-	BurtCan::registerHandler(DRIVE_COMMAND_ID, handleDriveCommand);
-	left.setup();
-	right.setup();
+  Serial.println("Initializing Drive subsystem");
+
+  Serial.println("Initializing communications...");
+	can.setup();
+  nextSendTime = millis() + canSendInterval;
+
+  Serial.println("Initializing VESC motor drivers...");
+	left1.setup();
+	left2.setup();
+	left3.setup();
+	right1.setup();
+	right2.setup();
+	right3.setup();
+
+  Serial.println("Drive subsystem initialized");
 }
 
 void loop() {
-	BurtCan::update();
-	serial.parseSerial();
-	// sendData();
-	delay(10);
+	can.update();
+	serial.update();
+	sendData();
+  delay(1);
 }
