@@ -23,6 +23,10 @@ typedef struct _DriveCommand {
     bool set_right;
     /* Indicates that [throttle] = 0 is valid, even though 0 usually means no value. */
     bool set_throttle;
+    float front_swivel;
+    float front_tilt;
+    float rear_swivel;
+    float rear_tilt;
 } DriveCommand;
 
 typedef struct _DriveData {
@@ -38,6 +42,10 @@ typedef struct _DriveData {
     bool set_right;
     /* Indicates that [throttle] = 0 is valid, even though 0 usually means no value. */
     bool set_throttle;
+    float front_swivel;
+    float front_tilt;
+    float rear_swivel;
+    float rear_tilt;
 } DriveData;
 
 
@@ -46,10 +54,10 @@ extern "C" {
 #endif
 
 /* Initializer values for message structs */
-#define DriveCommand_init_default                {0, 0, 0, 0, 0, 0}
-#define DriveData_init_default                   {0, 0, 0, 0, 0, 0}
-#define DriveCommand_init_zero                   {0, 0, 0, 0, 0, 0}
-#define DriveData_init_zero                      {0, 0, 0, 0, 0, 0}
+#define DriveCommand_init_default                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+#define DriveData_init_default                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+#define DriveCommand_init_zero                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+#define DriveData_init_zero                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define DriveCommand_throttle_tag                1
@@ -58,12 +66,20 @@ extern "C" {
 #define DriveCommand_set_left_tag                4
 #define DriveCommand_set_right_tag               5
 #define DriveCommand_set_throttle_tag            6
+#define DriveCommand_front_swivel_tag            7
+#define DriveCommand_front_tilt_tag              8
+#define DriveCommand_rear_swivel_tag             9
+#define DriveCommand_rear_tilt_tag               10
 #define DriveData_throttle_tag                   1
 #define DriveData_left_tag                       2
 #define DriveData_right_tag                      3
 #define DriveData_set_left_tag                   4
 #define DriveData_set_right_tag                  5
 #define DriveData_set_throttle_tag               6
+#define DriveData_front_swivel_tag               7
+#define DriveData_front_tilt_tag                 8
+#define DriveData_rear_swivel_tag                9
+#define DriveData_rear_tilt_tag                  10
 
 /* Struct field encoding specification for nanopb */
 #define DriveCommand_FIELDLIST(X, a) \
@@ -72,7 +88,11 @@ X(a, STATIC,   SINGULAR, FLOAT,    left,              2) \
 X(a, STATIC,   SINGULAR, FLOAT,    right,             3) \
 X(a, STATIC,   SINGULAR, BOOL,     set_left,          4) \
 X(a, STATIC,   SINGULAR, BOOL,     set_right,         5) \
-X(a, STATIC,   SINGULAR, BOOL,     set_throttle,      6)
+X(a, STATIC,   SINGULAR, BOOL,     set_throttle,      6) \
+X(a, STATIC,   SINGULAR, FLOAT,    front_swivel,      7) \
+X(a, STATIC,   SINGULAR, FLOAT,    front_tilt,        8) \
+X(a, STATIC,   SINGULAR, FLOAT,    rear_swivel,       9) \
+X(a, STATIC,   SINGULAR, FLOAT,    rear_tilt,        10)
 #define DriveCommand_CALLBACK NULL
 #define DriveCommand_DEFAULT NULL
 
@@ -82,7 +102,11 @@ X(a, STATIC,   SINGULAR, FLOAT,    left,              2) \
 X(a, STATIC,   SINGULAR, FLOAT,    right,             3) \
 X(a, STATIC,   SINGULAR, BOOL,     set_left,          4) \
 X(a, STATIC,   SINGULAR, BOOL,     set_right,         5) \
-X(a, STATIC,   SINGULAR, BOOL,     set_throttle,      6)
+X(a, STATIC,   SINGULAR, BOOL,     set_throttle,      6) \
+X(a, STATIC,   SINGULAR, FLOAT,    front_swivel,      7) \
+X(a, STATIC,   SINGULAR, FLOAT,    front_tilt,        8) \
+X(a, STATIC,   SINGULAR, FLOAT,    rear_swivel,       9) \
+X(a, STATIC,   SINGULAR, FLOAT,    rear_tilt,        10)
 #define DriveData_CALLBACK NULL
 #define DriveData_DEFAULT NULL
 
@@ -94,8 +118,8 @@ extern const pb_msgdesc_t DriveData_msg;
 #define DriveData_fields &DriveData_msg
 
 /* Maximum encoded size of messages (where known) */
-#define DriveCommand_size                        21
-#define DriveData_size                           21
+#define DriveCommand_size                        41
+#define DriveData_size                           41
 
 #ifdef __cplusplus
 } /* extern "C" */
