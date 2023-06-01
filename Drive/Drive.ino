@@ -1,3 +1,4 @@
+#include <HCSR04.h>
 #include <Servo.h>
 
 #include "src/utils/BURT_utils.h"
@@ -12,6 +13,11 @@
 #define BACK_SWIVEL 12
 #define BACK_TILT 28
 
+#define LEFT_TRIGGER_PIN 19
+#define LEFT_ECHO_PIN 20
+#define RIGHT_TRIGGER_PIN 34
+#define RIGHT_ECHO_PIN 35
+
 #define US_MIN 500
 #define US_MAX 2500
 
@@ -19,6 +25,9 @@ Servo servo1;
 Servo servo2;
 Servo servo3;
 Servo servo4;
+
+UltraSonicDistanceSensor leftSensor(LEFT_TRIGGER_PIN, LEFT_ECHO_PIN);
+UltraSonicDistanceSensor rightSensor(RIGHT_TRIGGER_PIN, RIGHT_ECHO_PIN);
 
 VescDriver left1(1);
 VescDriver left2(3);
@@ -85,10 +94,18 @@ void sendData() {
   data.set_throttle = true;
 	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
 
+	data = DriveData_init_zero;
+	data.leftSensorValue = leftSensor.measureDistanceCm();
+	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
+
+	data = DriveData_init_zero;
+	data.rightSensorValue = rightSensor.measureDistanceCm();
+	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
+
   nextSendTime = millis() + canSendInterval;
 }
 
-int deg_to_us(int degrees) {
+int deg_to_us(int degrees) {1
   return degrees * (US_MAX - US_MIN) / 180 + US_MIN;
 }
 
