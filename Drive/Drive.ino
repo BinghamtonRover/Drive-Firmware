@@ -96,16 +96,20 @@ void sendData() {
 
 	data = DriveData_init_zero;
 	data.leftSensorValue = leftSensor.measureDistanceCm();
+  Serial.print("Left: ");
+  Serial.println(data.leftSensorValue);
 	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
 
 	data = DriveData_init_zero;
 	data.rightSensorValue = rightSensor.measureDistanceCm();
+    Serial.print("Right: ");
+  Serial.println(data.rightSensorValue);
 	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
 
   nextSendTime = millis() + canSendInterval;
 }
 
-int deg_to_us(int degrees) {1
+int deg_to_us(int degrees) {
   return degrees * (US_MAX - US_MIN) / 180 + US_MIN;
 }
 
