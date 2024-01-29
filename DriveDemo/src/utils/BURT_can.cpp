@@ -39,10 +39,13 @@ void BurtCan::setup() {
 
 	can2.enableMBInterrupts();
 	can2.setMBFilter(REJECT_ALL);
+	// can2.setFIFOFilter(REJECT_ALL);
 
 	// Creates a new mailbox set to handle [id] with [handler]. 
 	FLEXCAN_MAILBOX mb = FLEXCAN_MAILBOX(mailbox);
+	// can.setFIFOFilter(0, id, EXT);
 	can.setMBFilter(mb, id);
+	// can.setMB(mb, RX, EXT);
 	can.onReceive(mb, canHandler);
 	mailbox += 1;
 }
@@ -64,7 +67,7 @@ void BurtCan::sendRaw(uint32_t id, uint8_t data[DATA_LENGTH], int length) {
     frame.len = length;
 	memset(frame.buf, 0, DATA_LENGTH);
 	memcpy(frame.buf, data, length);
-	// int result = can2.write(frame);
+	int result = can2.write(frame);
 	// Serial.print("Got result: ");
 	// Serial.println(result);
 }

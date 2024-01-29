@@ -45,7 +45,7 @@ class BurtCan {
 	private: 
 		/// The underlying `FlexCAN_T4` instance.
 		Can3 can;  
-		Can2 can2;  
+		Can1 can2;  
 
 		// Can3 canFD;
 

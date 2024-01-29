@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+enum PumpState {
+	PUMP_STATE_UNDEFINED = 0;
+	PUMP_ON = 1;
+	PUMP_OFF = 2;
+}
+
+enum DirtReleaseState {
+	DIRT_RELEASE_STATE_UNDEFINED = 0;
+	OPEN_DIRT = 1;
+	CLOSE_DIRT = 2;
+}
+
+enum ScienceState {
+	SCIENCE_STATE_UNDEFINED = 0;
+	COLLECT_DATA = 1;
+	STOP_COLLECTING = 2;
+}
+
+message ScienceCommand {
+	// Individual control over each motor. Indicates steps to move
+	float dirt_carousel = 1;
+	float dirt_linear = 2;
+	float science_linear = 3;
+	float vacuum_linear = 4;
+
+	// Vacuum
+	PumpState vacuum = 5;  // percentage, from 0-1
+	DirtReleaseState dirtRelease = 7;
+
+	// Pumps
+	PumpState pump1 = 8;
+	PumpState pump2 = 9;
+	PumpState pump3 = 10;
+	PumpState pump4 = 11;
+
+	// High level commands
+	bool calibrate = 12;
+	bool stop = 13;
+	bool next_tube = 14;
+	bool next_section = 15;
+
+	int32 sample = 16;
+	ScienceState state = 17;
+}
+
+message ScienceData {
+	float co2 = 1;
+	float humidity = 2;
+	float methane = 3;
+	float pH = 4;
+	float temperature = 5;
+	int32 sample = 6;
+	ScienceState state = 7;
+}
