@@ -1,8 +1,6 @@
-#include <HCSR04.h>
 #include <Servo.h>
 
 #include "src/utils/BURT_utils.h"
-#include "src/BURT_vesc.h"
 #include "src/drive.pb.h"
 
 #define DRIVE_COMMAND_ID 0x53
@@ -13,34 +11,93 @@
 #define BACK_SWIVEL 12
 #define BACK_TILT 28
 
-#define LEFT_TRIGGER_PIN 19
-#define LEFT_ECHO_PIN 20
-#define RIGHT_TRIGGER_PIN 34
-#define RIGHT_ECHO_PIN 35
+#define DATA_SEND_INTERVAL 10  // ms
+#define MOTOR_UPDATE_INTERVAL 10  // ms
 
-#define US_MIN 500
-#define US_MAX 2500
+#define MAX_DRIVE_SPEED 10000
 
-Servo servo1;
-Servo servo2;
-Servo servo3;
-Servo servo4;
+// ----- Motor CAN IDs ----
+#define LEFT_MOTOR_1_ID  0x302
+#define LEFT_MOTOR_2_ID  0x303
+#define LEFT_MOTOR_3_ID  0x307
+#define RIGHT_MOTOR_1_ID 0x308
+#define RIGHT_MOTOR_2_ID 0x304
+#define RIGHT_MOTOR_3_ID 0x301
 
-UltraSonicDistanceSensor leftSensor(LEFT_TRIGGER_PIN, LEFT_ECHO_PIN);
-UltraSonicDistanceSensor rightSensor(RIGHT_TRIGGER_PIN, RIGHT_ECHO_PIN);
+Servo frontSwivel, frontTilt;
+Servo backSwivel, backTilt;
 
-VescDriver left1(1);
-VescDriver left2(3);
-VescDriver left3(4);
-VescDriver right1(5);
-VescDriver right2(6);
-VescDriver right3(7);
 float leftVelocity, rightVelocity, throttle;
-int canSendInterval = 500;
-unsigned long nextSendTime;
+
+void handleDriveCommand(const uint8_t* data, int length);
+void handleMotorOutput(const uint8_t* data, int length) { /* TODO: Implement this */}
+void shutdown() { throttle = 0; updateSpeeds(); }
+void sendData();
+void updateMotors();
+
+BurtSerial serial(Device::Device_CONTROL, handleDriveCommand, shutdown);
+BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, Device::Device_CONTROL, handleDriveCommand, shutdown);
+BurtCan<Can1> motorCan(0, Device::Device_CONTROL, handleMotorOutput, shutdown, true);
+BurtTimer dataTimer(DATA_SEND_INTERVAL, sendData);
+BurtTimer motorTimer(MOTOR_UPDATE_INTERVAL, updateMotors);
+
+uint8_t leftData[4] = {0, 0, 0, 0};
+uint8_t rightData[4] = {0, 0, 0, 0};
+
+void setup() {
+	Serial.begin(9600);
+  Serial.println("Initializing Drive subsystem");
+
+  Serial.println("Initializing communications...");
+	roverCan.setup();
+	motorCan.setup();
+	serial.setup();
+	dataTimer.setup();
+	motorTimer.setup();
+
+	Serial.println("Initializing servos...");
+	frontSwivel.attach(FRONT_SWIVEL);
+	frontTilt.attach(FRONT_TILT);
+	backSwivel.attach(BACK_SWIVEL);
+	backTilt.attach(BACK_TILT);
+
+  Serial.println("Drive subsystem initialized");
+}
+
+void loop() {
+	serial.update();
+	roverCan.update();
+	motorCan.update();
+	dataTimer.update();
+	motorTimer.update();
+	delay(10);
+}
+
+void sendData() {
+	DriveData data = DriveData_init_zero;
+	data.left = leftVelocity;
+  data.set_left = true;
+	roverCan.send(DRIVE_DATA_ID, &data, DriveData_fields);
+
+	data = DriveData_init_zero;
+	data.right = rightVelocity;
+  data.set_right = true;
+	roverCan.send(DRIVE_DATA_ID, &data, DriveData_fields);
+
+	data = DriveData_init_zero;
+	data.throttle = throttle;
+  data.set_throttle = true;
+	roverCan.send(DRIVE_DATA_ID, &data, DriveData_fields);
+}
+
+void updateSpeeds() {
+	updateHexSpeed(leftVelocity, leftData);
+	updateHexSpeed(rightVelocity, rightData);
+}
 
 void handleDriveCommand(const uint8_t* data, int length) {
 	auto command = BurtProto::decode<DriveCommand>(data, length, DriveCommand_fields);
+	// Update motors
 	if (command.set_throttle) {
     if (command.throttle != 0) { Serial.print("Throttle: "); Serial.println(command.throttle); }
     throttle = command.throttle;
@@ -53,94 +110,27 @@ void handleDriveCommand(const uint8_t* data, int length) {
     if (command.right != 0) { Serial.print("Right: "); Serial.println(command.right); }
 		rightVelocity = command.right;
 	}
-
-	left1.setVelocity(leftVelocity, throttle);
-	left2.setVelocity(leftVelocity, throttle);
-	left3.setVelocity(leftVelocity, throttle);
-	right1.setVelocity(rightVelocity, throttle);
-	right2.setVelocity(rightVelocity, throttle);
-	right3.setVelocity(rightVelocity, throttle);
-
-	if (command.front_swivel != 0) moveServo(servo1, command.front_swivel);
-	if (command.front_tilt != 0) moveServo(servo2, command.front_tilt);
-	if (command.rear_swivel != 0) moveServo(servo3, command.rear_swivel);
-	if (command.rear_tilt != 0) moveServo(servo4, command.rear_tilt);
+	// Update servos
+	if (command.front_swivel != 0) frontSwivel.write(command.front_swivel);
+	if (command.front_tilt != 0) frontTilt.write(command.front_tilt);
+	if (command.rear_swivel != 0) backSwivel.write(command.rear_swivel);
+	if (command.rear_tilt != 0) backTilt.write(command.rear_tilt);
 }
 
-void moveServo(Servo& servo, int angle) {
-  Serial.print("Moving ");
-  Serial.print(angle);
-  Serial.println("degrees");
-	servo.writeMicroseconds(deg_to_us(angle));
+void updateHexSpeed(int speed_percent, uint8_t* buffer) {
+	int speed = MAX_DRIVE_SPEED * throttle * speed_percent;
+	if (abs(speed) < 5) speed = 0;
+  buffer[0] = (speed & 0xFF000000) >> 24;
+  buffer[1] = (speed & 0x00FF0000) >> 16;
+  buffer[2] = (speed & 0x0000FF00) >> 8;
+  buffer[3] = (speed & 0x000000FF);
 }
 
-BurtSerial serial(handleDriveCommand, Device::Device_DRIVE);
-BurtCan can(DRIVE_COMMAND_ID, handleDriveCommand);
-
-void sendData() {
-  if (millis() < nextSendTime) return;
-	DriveData data = DriveData_init_zero;
-	data.left = leftVelocity;
-  data.set_left = true;
-	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
-
-	data = DriveData_init_zero;
-	data.right = rightVelocity;
-  data.set_right = true;
-	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
-
-	data = DriveData_init_zero;
-	data.throttle = throttle;
-  data.set_throttle = true;
-	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
-
-	data = DriveData_init_zero;
-	data.leftSensorValue = leftSensor.measureDistanceCm();
-  Serial.print("Left: ");
-  Serial.println(data.leftSensorValue);
-	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
-
-	data = DriveData_init_zero;
-	data.rightSensorValue = rightSensor.measureDistanceCm();
-    Serial.print("Right: ");
-  Serial.println(data.rightSensorValue);
-	can.send(DRIVE_DATA_ID, &data, DriveData_fields);
-
-  nextSendTime = millis() + canSendInterval;
-}
-
-int deg_to_us(int degrees) {
-  return degrees * (US_MAX - US_MIN) / 180 + US_MIN;
-}
-
-void setup() {
-	Serial.begin(9600);
-  Serial.println("Initializing Drive subsystem");
-
-  Serial.println("Initializing communications...");
-	can.setup();
-  nextSendTime = millis() + canSendInterval;
-
-  Serial.println("Initializing VESC motor drivers...");
-	left1.setup();
-	left2.setup();
-	left3.setup();
-	right1.setup();
-	right2.setup();
-	right3.setup();
-
-	Serial.println("Initializing servos...");
-	servo1.attach(FRONT_SWIVEL);
-	servo2.attach(FRONT_TILT);
-	servo3.attach(BACK_SWIVEL);
-	servo4.attach(BACK_TILT);
-
-  Serial.println("Drive subsystem initialized");
-}
-
-void loop() {
-	can.update();
-	serial.update();
-	sendData();
-  delay(1);
+void updateMotors() {
+	motorCan.sendRaw(LEFT_MOTOR_1_ID, leftData, 4);
+  motorCan.sendRaw(LEFT_MOTOR_2_ID, leftData, 4);
+  motorCan.sendRaw(LEFT_MOTOR_3_ID, leftData, 4);
+  motorCan.sendRaw(RIGHT_MOTOR_1_ID, rightData, 4);
+  motorCan.sendRaw(RIGHT_MOTOR_2_ID, rightData, 4);
+  motorCan.sendRaw(RIGHT_MOTOR_3_ID, rightData, 4);
 }

@@ -29,8 +29,7 @@ unsigned long nextSendTime;
 uint8_t* decimalToHexArray(int decimalSpeed) {
   if (decimalSpeed < 5 && decimalSpeed > 0) {
     decimalSpeed = 0;
-  }
-  if (decimalSpeed > -5 && decimalSpeed < 0) {
+  } else if (decimalSpeed > -5 && decimalSpeed < 0) {
     decimalSpeed = 0;
   }
   uint8_t* speed = new uint8_t[4];
@@ -38,15 +37,6 @@ uint8_t* decimalToHexArray(int decimalSpeed) {
   speed[1] = (decimalSpeed & 0x00FF0000) >> 16;
   speed[2] = (decimalSpeed & 0x0000FF00) >> 8;
   speed[3] = (decimalSpeed & 0x000000FF);
-
-  // Serial.print(speed[0], HEX);
-  // Serial.print(" ");
-  // Serial.print(speed[1], HEX);
-  // Serial.print(" ");
-  // Serial.print(speed[2], HEX);
-  // Serial.print(" ");
-  // Serial.println(speed[3], HEX);
-
   return speed;
 }
 
