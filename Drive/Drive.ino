@@ -14,7 +14,7 @@
 #define DATA_SEND_INTERVAL 10  // ms
 #define MOTOR_UPDATE_INTERVAL 10  // ms
 
-#define MAX_DRIVE_SPEED 10000
+#define MAX_DRIVE_SPEED 20000  // ERPM
 
 // ----- Motor CAN IDs ----
 #define LEFT_MOTOR_1_ID  0x302
