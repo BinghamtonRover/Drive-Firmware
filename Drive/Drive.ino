@@ -12,9 +12,9 @@
 #define BACK_TILT 28
 
 #define DATA_SEND_INTERVAL 10  // ms
-#define MOTOR_UPDATE_INTERVAL 10  // ms
+#define MOTOR_UPDATE_INTERVAL 0  // ms
 
-#define MAX_DRIVE_SPEED 20000  // ERPM
+#define MAX_DRIVE_SPEED 20000  // E-RPM
 
 // ----- Motor CAN IDs ----
 #define LEFT_MOTOR_1_ID  0x302
@@ -52,6 +52,7 @@ void setup() {
 	roverCan.setup();
 	motorCan.setup();
 	serial.setup();
+	roverCan.showDebugInfo();
 	dataTimer.setup();
 	motorTimer.setup();
 
@@ -70,7 +71,6 @@ void loop() {
 	motorCan.update();
 	dataTimer.update();
 	motorTimer.update();
-	delay(10);
 }
 
 void sendData() {
@@ -110,6 +110,8 @@ void handleDriveCommand(const uint8_t* data, int length) {
     if (command.right != 0) { Serial.print("Right: "); Serial.println(command.right); }
 		rightVelocity = command.right;
 	}
+	updateSpeeds();
+
 	// Update servos
 	if (command.front_swivel != 0) frontSwivel.write(command.front_swivel);
 	if (command.front_tilt != 0) frontTilt.write(command.front_tilt);
@@ -117,7 +119,7 @@ void handleDriveCommand(const uint8_t* data, int length) {
 	if (command.rear_tilt != 0) backTilt.write(command.rear_tilt);
 }
 
-void updateHexSpeed(int speed_percent, uint8_t* buffer) {
+void updateHexSpeed(float speed_percent, uint8_t* buffer) {
 	int speed = MAX_DRIVE_SPEED * throttle * speed_percent;
 	if (abs(speed) < 5) speed = 0;
   buffer[0] = (speed & 0xFF000000) >> 24;
