@@ -11,18 +11,18 @@
 #define BACK_SWIVEL 12
 #define BACK_TILT 28
 
-#define DATA_SEND_INTERVAL 10  // ms
+#define DATA_SEND_INTERVAL 50  // ms
 #define MOTOR_UPDATE_INTERVAL 0  // ms
 
 #define MAX_DRIVE_SPEED 20000  // E-RPM
 
 // ----- Motor CAN IDs ----
-#define LEFT_MOTOR_1_ID  0x302
+#define LEFT_MOTOR_1_ID  0x301
 #define LEFT_MOTOR_2_ID  0x303
-#define LEFT_MOTOR_3_ID  0x307
-#define RIGHT_MOTOR_1_ID 0x308
-#define RIGHT_MOTOR_2_ID 0x304
-#define RIGHT_MOTOR_3_ID 0x301
+#define LEFT_MOTOR_3_ID  0x308
+#define RIGHT_MOTOR_1_ID 0x302
+#define RIGHT_MOTOR_2_ID 0x307
+#define RIGHT_MOTOR_3_ID 0x305
 
 Servo frontSwivel, frontTilt;
 Servo backSwivel, backTilt;
