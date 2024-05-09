@@ -3,25 +3,27 @@
 #include "src/utils/BURT_utils.h"
 #include "src/drive.pb.h"
 
-#define DRIVE_COMMAND_ID 0x53
-#define DRIVE_DATA_ID    0x14
+#define DRIVE_COMMAND_ID   0x53
+#define DRIVE_DATA_ID      0x14
 
-#define FRONT_SWIVEL 11
-#define FRONT_TILT 29
-#define BACK_SWIVEL 12
-#define BACK_TILT 28
+#define FRONT_SWIVEL 4
+#define FRONT_TILT 5
+#define BACK_SWIVEL 33
+#define BACK_TILT 32
 
-#define DATA_SEND_INTERVAL 50  // ms
+#define VOLTAGE_SENSOR A17
+
+#define DATA_SEND_INTERVAL 250  // ms
 #define MOTOR_UPDATE_INTERVAL 0  // ms
 
-#define MAX_DRIVE_SPEED 20000  // E-RPM
+#define MAX_DRIVE_SPEED 40000  // E-RPM
 
 // ----- Motor CAN IDs ----
-#define LEFT_MOTOR_1_ID  0x301
-#define LEFT_MOTOR_2_ID  0x303
-#define LEFT_MOTOR_3_ID  0x308
-#define RIGHT_MOTOR_1_ID 0x302
-#define RIGHT_MOTOR_2_ID 0x307
+#define LEFT_MOTOR_1_ID  0x302 //current config of motors
+#define LEFT_MOTOR_2_ID  0x307 // Motor 1 is closest to diff bar
+#define LEFT_MOTOR_3_ID  0x301
+#define RIGHT_MOTOR_1_ID 0x303
+#define RIGHT_MOTOR_2_ID 0x308
 #define RIGHT_MOTOR_3_ID 0x305
 
 Servo frontSwivel, frontTilt;
@@ -35,14 +37,19 @@ void shutdown() { throttle = 0; updateSpeeds(); }
 void sendData();
 void updateMotors();
 
-BurtSerial serial(Device::Device_CONTROL, handleDriveCommand, shutdown);
-BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, Device::Device_CONTROL, handleDriveCommand, shutdown);
-BurtCan<Can1> motorCan(0, Device::Device_CONTROL, handleMotorOutput, shutdown, true);
+BurtSerial serial(Device::Device_DRIVE, handleDriveCommand, shutdown);
+BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, Device::Device_DRIVE, handleDriveCommand, shutdown);
+BurtCan<Can1> motorCan(0, Device::Device_DRIVE, handleMotorOutput, shutdown, true);
 BurtTimer dataTimer(DATA_SEND_INTERVAL, sendData);
 BurtTimer motorTimer(MOTOR_UPDATE_INTERVAL, updateMotors);
 
 uint8_t leftData[4] = {0, 0, 0, 0};
 uint8_t rightData[4] = {0, 0, 0, 0};
+
+float read_voltage() {
+	float voltage = analogRead(VOLTAGE_SENSOR);
+	return voltage / 1023.0 * 3.3 * 11.0;  // 1023 represents 3.3V through an 11 ohm resistor
+}
 
 void setup() {
 	Serial.begin(9600);
@@ -52,7 +59,6 @@ void setup() {
 	roverCan.setup();
 	motorCan.setup();
 	serial.setup();
-	roverCan.showDebugInfo();
 	dataTimer.setup();
 	motorTimer.setup();
 
@@ -78,16 +84,24 @@ void sendData() {
 	data.left = leftVelocity;
   data.set_left = true;
 	roverCan.send(DRIVE_DATA_ID, &data, DriveData_fields);
+  serial.send(DriveData_fields, &data, 8);
 
 	data = DriveData_init_zero;
 	data.right = rightVelocity;
   data.set_right = true;
 	roverCan.send(DRIVE_DATA_ID, &data, DriveData_fields);
+  serial.send(DriveData_fields, &data, 8);
 
 	data = DriveData_init_zero;
 	data.throttle = throttle;
   data.set_throttle = true;
 	roverCan.send(DRIVE_DATA_ID, &data, DriveData_fields);
+  serial.send(DriveData_fields, &data, 8);
+
+	data = DriveData_init_zero;
+	data.battery_voltage = read_voltage();
+	roverCan.send(DRIVE_DATA_ID, &data, DriveData_fields);
+  serial.send(DriveData_fields, &data, 8);
 }
 
 void updateSpeeds() {

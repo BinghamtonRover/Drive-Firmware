@@ -4,6 +4,7 @@
 #ifndef PB_DRIVE_PB_H_INCLUDED
 #define PB_DRIVE_PB_H_INCLUDED
 #include "utils/pb.h"
+#include "utils/core.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
@@ -27,6 +28,7 @@ typedef struct _DriveCommand {
     float front_tilt;
     float rear_swivel;
     float rear_tilt;
+    RoverStatus status;
 } DriveCommand;
 
 typedef struct _DriveData {
@@ -46,6 +48,10 @@ typedef struct _DriveData {
     float front_tilt;
     float rear_swivel;
     float rear_tilt;
+    /* Vitals for the whole rover */
+    float battery_voltage;
+    float battery_current;
+    float battery_temperature;
 } DriveData;
 
 
@@ -54,10 +60,10 @@ extern "C" {
 #endif
 
 /* Initializer values for message structs */
-#define DriveCommand_init_default                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-#define DriveData_init_default                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-#define DriveCommand_init_zero                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-#define DriveData_init_zero                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+#define DriveCommand_init_default                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN}
+#define DriveData_init_default                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+#define DriveCommand_init_zero                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN}
+#define DriveData_init_zero                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define DriveCommand_throttle_tag                1
@@ -70,6 +76,7 @@ extern "C" {
 #define DriveCommand_front_tilt_tag              8
 #define DriveCommand_rear_swivel_tag             9
 #define DriveCommand_rear_tilt_tag               10
+#define DriveCommand_status_tag                  11
 #define DriveData_throttle_tag                   1
 #define DriveData_left_tag                       2
 #define DriveData_right_tag                      3
@@ -80,6 +87,9 @@ extern "C" {
 #define DriveData_front_tilt_tag                 8
 #define DriveData_rear_swivel_tag                9
 #define DriveData_rear_tilt_tag                  10
+#define DriveData_battery_voltage_tag            11
+#define DriveData_battery_current_tag            12
+#define DriveData_battery_temperature_tag        13
 
 /* Struct field encoding specification for nanopb */
 #define DriveCommand_FIELDLIST(X, a) \
@@ -92,7 +102,8 @@ X(a, STATIC,   SINGULAR, BOOL,     set_throttle,      6) \
 X(a, STATIC,   SINGULAR, FLOAT,    front_swivel,      7) \
 X(a, STATIC,   SINGULAR, FLOAT,    front_tilt,        8) \
 X(a, STATIC,   SINGULAR, FLOAT,    rear_swivel,       9) \
-X(a, STATIC,   SINGULAR, FLOAT,    rear_tilt,        10)
+X(a, STATIC,   SINGULAR, FLOAT,    rear_tilt,        10) \
+X(a, STATIC,   SINGULAR, UENUM,    status,           11)
 #define DriveCommand_CALLBACK NULL
 #define DriveCommand_DEFAULT NULL
 
@@ -106,7 +117,10 @@ X(a, STATIC,   SINGULAR, BOOL,     set_throttle,      6) \
 X(a, STATIC,   SINGULAR, FLOAT,    front_swivel,      7) \
 X(a, STATIC,   SINGULAR, FLOAT,    front_tilt,        8) \
 X(a, STATIC,   SINGULAR, FLOAT,    rear_swivel,       9) \
-X(a, STATIC,   SINGULAR, FLOAT,    rear_tilt,        10)
+X(a, STATIC,   SINGULAR, FLOAT,    rear_tilt,        10) \
+X(a, STATIC,   SINGULAR, FLOAT,    battery_voltage,  11) \
+X(a, STATIC,   SINGULAR, FLOAT,    battery_current,  12) \
+X(a, STATIC,   SINGULAR, FLOAT,    battery_temperature,  13)
 #define DriveData_CALLBACK NULL
 #define DriveData_DEFAULT NULL
 
@@ -118,9 +132,9 @@ extern const pb_msgdesc_t DriveData_msg;
 #define DriveData_fields &DriveData_msg
 
 /* Maximum encoded size of messages (where known) */
-#define DRIVE_PB_H_MAX_SIZE                      DriveCommand_size
-#define DriveCommand_size                        41
-#define DriveData_size                           41
+#define DRIVE_PB_H_MAX_SIZE                      DriveData_size
+#define DriveCommand_size                        43
+#define DriveData_size                           56
 
 #ifdef __cplusplus
 } /* extern "C" */
