@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "leds.h"
+#include "led_strip.h"
 
 const int redPin = 14;
 const int greenPin = 15;

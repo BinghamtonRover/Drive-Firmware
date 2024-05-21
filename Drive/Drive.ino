@@ -3,7 +3,7 @@
 #include "src/utils/BURT_utils.h"
 #include "src/drive.pb.h"
 
-#include "src/leds/leds.h"
+#include "src/led_strip/led_strip.h"
 
 #define DRIVE_COMMAND_ID   0x53
 #define DRIVE_DATA_ID      0x14
