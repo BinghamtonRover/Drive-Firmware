@@ -4,12 +4,20 @@
 #ifndef PB_DRIVE_PB_H_INCLUDED
 #define PB_DRIVE_PB_H_INCLUDED
 #include "utils/pb.h"
-#include "utils/core.pb.h"
+#include "status.pb.h"
 #include "version.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
 #endif
+
+/* Enum definitions */
+typedef enum _ProtoColor {
+    ProtoColor_PROTO_COLOR_UNDEFINED = 0,
+    ProtoColor_RED = 1,
+    ProtoColor_GREEN = 2,
+    ProtoColor_BLUE = 3
+} ProtoColor;
 
 /* Struct definitions */
 typedef struct _DriveCommand {
@@ -32,6 +40,8 @@ typedef struct _DriveCommand {
     RoverStatus status;
     bool has_version;
     Version version;
+    ProtoColor color;
+    bool blink;
 } DriveCommand;
 
 typedef struct _DriveData {
@@ -57,6 +67,15 @@ typedef struct _DriveData {
     float battery_temperature;
     bool has_version;
     Version version;
+    /* Information about each wheel in rpm */
+    float back_left;
+    float middle_left;
+    float front_left;
+    float back_right;
+    float middle_right;
+    float front_right;
+    ProtoColor color;
+    RoverStatus status;
 } DriveData;
 
 
@@ -64,11 +83,23 @@ typedef struct _DriveData {
 extern "C" {
 #endif
 
+/* Helper constants for enums */
+#define _ProtoColor_MIN ProtoColor_PROTO_COLOR_UNDEFINED
+#define _ProtoColor_MAX ProtoColor_BLUE
+#define _ProtoColor_ARRAYSIZE ((ProtoColor)(ProtoColor_BLUE+1))
+
+#define DriveCommand_status_ENUMTYPE RoverStatus
+#define DriveCommand_color_ENUMTYPE ProtoColor
+
+#define DriveData_color_ENUMTYPE ProtoColor
+#define DriveData_status_ENUMTYPE RoverStatus
+
+
 /* Initializer values for message structs */
-#define DriveCommand_init_default                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_default}
-#define DriveData_init_default                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_default}
-#define DriveCommand_init_zero                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_zero}
-#define DriveData_init_zero                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_zero}
+#define DriveCommand_init_default                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_default, _ProtoColor_MIN, 0}
+#define DriveData_init_default                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_default, 0, 0, 0, 0, 0, 0, _ProtoColor_MIN, _RoverStatus_MIN}
+#define DriveCommand_init_zero                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_zero, _ProtoColor_MIN, 0}
+#define DriveData_init_zero                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_zero, 0, 0, 0, 0, 0, 0, _ProtoColor_MIN, _RoverStatus_MIN}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define DriveCommand_throttle_tag                1
@@ -83,6 +114,8 @@ extern "C" {
 #define DriveCommand_rear_tilt_tag               10
 #define DriveCommand_status_tag                  11
 #define DriveCommand_version_tag                 12
+#define DriveCommand_color_tag                   13
+#define DriveCommand_blink_tag                   14
 #define DriveData_throttle_tag                   1
 #define DriveData_left_tag                       2
 #define DriveData_right_tag                      3
@@ -97,6 +130,14 @@ extern "C" {
 #define DriveData_battery_current_tag            12
 #define DriveData_battery_temperature_tag        13
 #define DriveData_version_tag                    14
+#define DriveData_back_left_tag                  15
+#define DriveData_middle_left_tag                16
+#define DriveData_front_left_tag                 17
+#define DriveData_back_right_tag                 18
+#define DriveData_middle_right_tag               19
+#define DriveData_front_right_tag                20
+#define DriveData_color_tag                      21
+#define DriveData_status_tag                     22
 
 /* Struct field encoding specification for nanopb */
 #define DriveCommand_FIELDLIST(X, a) \
@@ -111,7 +152,9 @@ X(a, STATIC,   SINGULAR, FLOAT,    front_tilt,        8) \
 X(a, STATIC,   SINGULAR, FLOAT,    rear_swivel,       9) \
 X(a, STATIC,   SINGULAR, FLOAT,    rear_tilt,        10) \
 X(a, STATIC,   SINGULAR, UENUM,    status,           11) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  version,          12)
+X(a, STATIC,   OPTIONAL, MESSAGE,  version,          12) \
+X(a, STATIC,   SINGULAR, UENUM,    color,            13) \
+X(a, STATIC,   SINGULAR, BOOL,     blink,            14)
 #define DriveCommand_CALLBACK NULL
 #define DriveCommand_DEFAULT NULL
 #define DriveCommand_version_MSGTYPE Version
@@ -130,7 +173,15 @@ X(a, STATIC,   SINGULAR, FLOAT,    rear_tilt,        10) \
 X(a, STATIC,   SINGULAR, FLOAT,    battery_voltage,  11) \
 X(a, STATIC,   SINGULAR, FLOAT,    battery_current,  12) \
 X(a, STATIC,   SINGULAR, FLOAT,    battery_temperature,  13) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  version,          14)
+X(a, STATIC,   OPTIONAL, MESSAGE,  version,          14) \
+X(a, STATIC,   SINGULAR, FLOAT,    back_left,        15) \
+X(a, STATIC,   SINGULAR, FLOAT,    middle_left,      16) \
+X(a, STATIC,   SINGULAR, FLOAT,    front_left,       17) \
+X(a, STATIC,   SINGULAR, FLOAT,    back_right,       18) \
+X(a, STATIC,   SINGULAR, FLOAT,    middle_right,     19) \
+X(a, STATIC,   SINGULAR, FLOAT,    front_right,      20) \
+X(a, STATIC,   SINGULAR, UENUM,    color,            21) \
+X(a, STATIC,   SINGULAR, UENUM,    status,           22)
 #define DriveData_CALLBACK NULL
 #define DriveData_DEFAULT NULL
 #define DriveData_version_MSGTYPE Version
@@ -144,8 +195,8 @@ extern const pb_msgdesc_t DriveData_msg;
 
 /* Maximum encoded size of messages (where known) */
 #define DRIVE_PB_H_MAX_SIZE                      DriveData_size
-#define DriveCommand_size                        67
-#define DriveData_size                           80
+#define DriveCommand_size                        71
+#define DriveData_size                           121
 
 #ifdef __cplusplus
 } /* extern "C" */
