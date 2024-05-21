@@ -43,6 +43,7 @@ void Motors::handleCommand(DriveCommand command) {
 	if (command.set_right) {
 		right = command.right;
 	}
+  updateBuffers();
 }
 
 void Motors::stop() {
