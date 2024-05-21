@@ -3,13 +3,15 @@
 #include "src/utils/BURT_utils.h"
 #include "src/drive.pb.h"
 
+#include "src/leds/leds.h"
+
 #define DRIVE_COMMAND_ID   0x53
 #define DRIVE_DATA_ID      0x14
 
 #define FRONT_SWIVEL 4
 #define FRONT_TILT 5
 #define BACK_SWIVEL 33
-#define BACK_TILT 32
+#define BACK_TILT 36
 
 #define VOLTAGE_SENSOR A17
 
@@ -26,8 +28,12 @@
 #define RIGHT_MOTOR_2_ID 0x308
 #define RIGHT_MOTOR_3_ID 0x305
 
+const Version version = {major: 1, minor: 0};
+
 Servo frontSwivel, frontTilt;
 Servo backSwivel, backTilt;
+
+
 
 float leftVelocity, rightVelocity, throttle;
 
@@ -45,6 +51,8 @@ BurtTimer motorTimer(MOTOR_UPDATE_INTERVAL, updateMotors);
 
 uint8_t leftData[4] = {0, 0, 0, 0};
 uint8_t rightData[4] = {0, 0, 0, 0};
+
+LedStrip leds;
 
 float read_voltage() {
 	float voltage = analogRead(VOLTAGE_SENSOR);
@@ -68,8 +76,13 @@ void setup() {
 	backSwivel.attach(BACK_SWIVEL);
 	backTilt.attach(BACK_TILT);
 
+	leds.setup();
+	leds.blue();
+
   Serial.println("Drive subsystem initialized");
 }
+
+uint8_t version_buffer[8] = {0x72, 0x04, 0x08, 0x01, 0x10, 0x00};
 
 void loop() {
 	serial.update();
@@ -85,6 +98,13 @@ void sendData() {
   data.set_left = true;
 	roverCan.send(DRIVE_DATA_ID, &data, DriveData_fields);
   serial.send(DriveData_fields, &data, 8);
+
+  // data = DriveData_init_zero;
+	// data.version = version;
+	// roverCan.send(DRIVE_DATA_ID, &data, DriveData_fields);
+  // serial.send(DriveData_fields, &data, 64);
+  Serial.write(version_buffer, 6);
+  roverCan.sendRaw(DRIVE_DATA_ID, version_buffer, 6);
 
 	data = DriveData_init_zero;
 	data.right = rightVelocity;
@@ -102,6 +122,11 @@ void sendData() {
 	data.battery_voltage = read_voltage();
 	roverCan.send(DRIVE_DATA_ID, &data, DriveData_fields);
   serial.send(DriveData_fields, &data, 8);
+
+  data = DriveData_init_zero;
+	data.front_swivel = 15;
+	roverCan.send(DRIVE_DATA_ID, &data, DriveData_fields);
+  serial.send(DriveData_fields, &data, 8);
 }
 
 void updateSpeeds() {
@@ -113,15 +138,12 @@ void handleDriveCommand(const uint8_t* data, int length) {
 	auto command = BurtProto::decode<DriveCommand>(data, length, DriveCommand_fields);
 	// Update motors
 	if (command.set_throttle) {
-    if (command.throttle != 0) { Serial.print("Throttle: "); Serial.println(command.throttle); }
     throttle = command.throttle;
   }
 	if (command.set_left) {
-    if (command.left != 0) { Serial.print("Left: "); Serial.println(command.left); }
 		leftVelocity = command.left;
 	}
 	if (command.set_right) {
-    if (command.right != 0) { Serial.print("Right: "); Serial.println(command.right); }
 		rightVelocity = command.right;
 	}
 	updateSpeeds();
