@@ -61,6 +61,7 @@ void loop() {
 
 void sendData() {
 	DriveData versionData = {version: version};
+	versionData.has_version = true;
 	serial.send(&versionData);
 	serial.send(&buttons.data);
 	serial.send(&motors.data);
