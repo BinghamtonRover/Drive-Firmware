@@ -13,7 +13,7 @@ class Motors {
     float right = 0;
     float throttle = 0; 
   
-    void sendMotorCommands(BurtCan<Can1> can);
+    void sendMotorCommands(BurtCan<Can1> &can);
     void handleCommand(DriveCommand command);
 
     void stop();

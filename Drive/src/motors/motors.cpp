@@ -24,7 +24,7 @@ void Motors::updateBuffers() {
 }
 
 
-void Motors::sendMotorCommands(BurtCan<Can1> can) {
+void Motors::sendMotorCommands(BurtCan<Can1> &can) {
   can.sendRaw(leftMotor1, leftBuffer, 4);
   can.sendRaw(leftMotor2, leftBuffer, 4);
   can.sendRaw(leftMotor3, leftBuffer, 4);
