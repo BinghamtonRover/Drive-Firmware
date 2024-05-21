@@ -10,7 +10,7 @@
 #define DATA_SEND_INTERVAL 250  // ms
 #define MOTOR_UPDATE_INTERVAL 0  // ms
 
-const Version version = {major: 1, minor: 0};
+const Version version = {major: 1, minor: 1};
 
 void handleCommand(const uint8_t* data, int length);
 void handleMotorOutput(const uint8_t* data, int length) { motors.handleMotorOutput(data, length); }

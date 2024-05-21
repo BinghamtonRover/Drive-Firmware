@@ -8,7 +8,7 @@ class LedStrip {
     int redValue;
     int greenValue;
     int blueValue;
-    bool shouldBlink;
+    bool shouldBlink = false;
     bool isOn;
   
   public: 
