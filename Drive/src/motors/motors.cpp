@@ -36,37 +36,42 @@ void Motors::handleMotorOutput(const uint8_t* data, int length) {
   // TODO
 }
 
+void Motors::setup() {
+  data.set_throttle = true;
+  data.set_left = true;
+  data.set_right = true;
+}
+
 void Motors::handleCommand(DriveCommand command) {
 	if (command.set_throttle) {
     throttle = command.throttle;
-    data.set_throttle = true;
     data.throttle = command.throttle;
   }
 	if (command.set_left) {
 		left = command.left;
-    data.set_left = true;
 		data.left = command.left;
 	}
 	if (command.set_right) {
 		right = command.right;
-    data.set_right = true;
 		data.right = command.right;
 	}
   updateBuffers();
 }
 
 void Motors::stop() {
-  throttle = 0;
-  updateBuffers();
+  setThrottle(0);
 }
 
 void Motors::setSpeeds(float newLeft, float newRight) {
   left = newLeft;
   right = newRight;
+  data.left = left;
+  data.right = right;
   updateBuffers();
 }
 
 void Motors::setThrottle(float newThrottle) {
   throttle = newThrottle;
+  data.throttle = throttle;
   updateBuffers();
 }

@@ -40,6 +40,7 @@ void setup() {
 	blinkTimer.setup();
 
 	Serial.println("Initializing hardware...");
+	motors.setup();
 	buttons.setup();
 	cameras.setup();
 	led_strip.setup();

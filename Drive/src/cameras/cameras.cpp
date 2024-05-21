@@ -8,11 +8,11 @@ const int backTiltPin = 36;
 
 void Cameras::setup() {
   frontSwivel.attach(frontSwivelPin);
-  delay(200);
+  delay(1000);
   frontTilt.attach(frontTiltPin);
-  delay(200);
+  delay(1000);
   backSwivel.attach(backSwivelPin);
-  delay(200);
+  delay(1000);
   backTilt.attach(backTiltPin);
 }
 
