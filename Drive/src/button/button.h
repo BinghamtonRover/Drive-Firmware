@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 class LedButton {
   private: 
     int ledPin;

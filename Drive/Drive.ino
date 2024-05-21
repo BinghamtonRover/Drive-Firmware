@@ -29,7 +29,7 @@ void handleDriveCommand(const uint8_t* data, int length);
 void handleMotorOutput(const uint8_t* data, int length) { /* TODO: Implement this */}
 void shutdown() { throttle = 0; }
 void sendData();
-void updateMotors();
+void updateMotors() { }
 
 BurtSerial serial(Device::Device_DRIVE, handleDriveCommand, shutdown);
 BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, Device::Device_DRIVE, handleDriveCommand, shutdown);
@@ -116,10 +116,5 @@ void sendData() {
 
 void handleDriveCommand(const uint8_t* data, int length) {
 	auto command = BurtProto::decode<DriveCommand>(data, length, DriveCommand_fields);
-
-	// Update servos
-	if (command.front_swivel != 0) frontSwivel.write(command.front_swivel);
-	if (command.front_tilt != 0) frontTilt.write(command.front_tilt);
-	if (command.rear_swivel != 0) backSwivel.write(command.rear_swivel);
-	if (command.rear_tilt != 0) backTilt.write(command.rear_tilt);
+	
 }
