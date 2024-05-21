@@ -23,7 +23,6 @@ void Motors::updateBuffers() {
 	updateBuffer(right, rightBuffer);
 }
 
-
 void Motors::sendMotorCommands(BurtCan<Can1> &can) {
   can.sendRaw(leftMotor1, leftBuffer, 4);
   can.sendRaw(leftMotor2, leftBuffer, 4);
@@ -31,6 +30,10 @@ void Motors::sendMotorCommands(BurtCan<Can1> &can) {
   can.sendRaw(rightMotor1, rightBuffer, 4);
   can.sendRaw(rightMotor2, rightBuffer, 4);
   can.sendRaw(rightMotor3, rightBuffer, 4);
+}
+
+void Motors::handleMotorOutput(const uint8_t* data, int length) {
+  // TODO
 }
 
 void Motors::handleCommand(DriveCommand command) {

@@ -18,9 +18,9 @@ void shutdown() { motors.stop(); }
 void sendData();
 void updateMotors() { }
 
-BurtSerial serial(Device::Device_DRIVE, handleCommand, shutdown);
-BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, Device::Device_DRIVE, handleCommand, shutdown);
-BurtCan<Can1> motorCan(0, Device::Device_DRIVE, handleMotorOutput, shutdown, true);
+BurtSerial serial(Device::Device_DRIVE, handleCommand);
+BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, handleCommand);
+BurtCan<Can1> motorCan(0, handleMotorOutput, true);
 BurtTimer dataTimer(DATA_SEND_INTERVAL, sendData);
 BurtTimer motorTimer(MOTOR_UPDATE_INTERVAL, updateMotors);
 

@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "cameras.h"
 
 const int frontSwivelPin = 4;

@@ -14,6 +14,7 @@ class Motors {
     float throttle = 0; 
   
     void sendMotorCommands(BurtCan<Can1> &can);
+    void handleMotorOutput(const uint8_t* data, int length);
     void handleCommand(DriveCommand command);
 
     void stop();
