@@ -39,12 +39,18 @@ void Motors::handleMotorOutput(const uint8_t* data, int length) {
 void Motors::handleCommand(DriveCommand command) {
 	if (command.set_throttle) {
     throttle = command.throttle;
+    data.set_throttle = true;
+    data.throttle = command.throttle;
   }
 	if (command.set_left) {
 		left = command.left;
+    data.set_left = true;
+		data.left = command.left;
 	}
 	if (command.set_right) {
 		right = command.right;
+    data.set_right = true;
+		data.right = command.right;
 	}
   updateBuffers();
 }

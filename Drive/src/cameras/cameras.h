@@ -9,6 +9,7 @@ class Cameras {
     Servo backTilt;
     
   public: 
+    DriveData data;
     void setup();
     void handleCommand(DriveCommand command);
 };

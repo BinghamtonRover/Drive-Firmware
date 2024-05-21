@@ -9,9 +9,11 @@ class Motors {
     void updateBuffers();
   
   public:
+    DriveData data;
     float left = 0;
     float right = 0;
     float throttle = 0; 
+  
   
     void sendMotorCommands(BurtCan<Can1> &can);
     void handleMotorOutput(const uint8_t* data, int length);

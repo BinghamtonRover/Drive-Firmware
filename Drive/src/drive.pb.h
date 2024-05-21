@@ -5,6 +5,7 @@
 #define PB_DRIVE_PB_H_INCLUDED
 #include "utils/pb.h"
 #include "status.pb.h"
+#include "utils.pb.h"
 #include "version.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
@@ -16,7 +17,8 @@ typedef enum _ProtoColor {
     ProtoColor_PROTO_COLOR_UNDEFINED = 0,
     ProtoColor_RED = 1,
     ProtoColor_GREEN = 2,
-    ProtoColor_BLUE = 3
+    ProtoColor_BLUE = 3,
+    ProtoColor_UNLIT = 4
 } ProtoColor;
 
 /* Struct definitions */
@@ -41,7 +43,7 @@ typedef struct _DriveCommand {
     bool has_version;
     Version version;
     ProtoColor color;
-    bool blink;
+    BoolState blink;
 } DriveCommand;
 
 typedef struct _DriveData {
@@ -85,20 +87,21 @@ extern "C" {
 
 /* Helper constants for enums */
 #define _ProtoColor_MIN ProtoColor_PROTO_COLOR_UNDEFINED
-#define _ProtoColor_MAX ProtoColor_BLUE
-#define _ProtoColor_ARRAYSIZE ((ProtoColor)(ProtoColor_BLUE+1))
+#define _ProtoColor_MAX ProtoColor_UNLIT
+#define _ProtoColor_ARRAYSIZE ((ProtoColor)(ProtoColor_UNLIT+1))
 
 #define DriveCommand_status_ENUMTYPE RoverStatus
 #define DriveCommand_color_ENUMTYPE ProtoColor
+#define DriveCommand_blink_ENUMTYPE BoolState
 
 #define DriveData_color_ENUMTYPE ProtoColor
 #define DriveData_status_ENUMTYPE RoverStatus
 
 
 /* Initializer values for message structs */
-#define DriveCommand_init_default                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_default, _ProtoColor_MIN, 0}
+#define DriveCommand_init_default                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_default, _ProtoColor_MIN, _BoolState_MIN}
 #define DriveData_init_default                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_default, 0, 0, 0, 0, 0, 0, _ProtoColor_MIN, _RoverStatus_MIN}
-#define DriveCommand_init_zero                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_zero, _ProtoColor_MIN, 0}
+#define DriveCommand_init_zero                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_zero, _ProtoColor_MIN, _BoolState_MIN}
 #define DriveData_init_zero                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_zero, 0, 0, 0, 0, 0, 0, _ProtoColor_MIN, _RoverStatus_MIN}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -154,7 +157,7 @@ X(a, STATIC,   SINGULAR, FLOAT,    rear_tilt,        10) \
 X(a, STATIC,   SINGULAR, UENUM,    status,           11) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  version,          12) \
 X(a, STATIC,   SINGULAR, UENUM,    color,            13) \
-X(a, STATIC,   SINGULAR, BOOL,     blink,            14)
+X(a, STATIC,   SINGULAR, UENUM,    blink,            14)
 #define DriveCommand_CALLBACK NULL
 #define DriveCommand_DEFAULT NULL
 #define DriveCommand_version_MSGTYPE Version

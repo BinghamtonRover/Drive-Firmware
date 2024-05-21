@@ -4,9 +4,7 @@
 #include "src/cameras/cameras.h"
 #include "src/voltage/voltage.h"
 
-// LedButton(led pin, button pin)
-LedButton green(12, 13);
-LedButton yellow(14, 15);
+Buttons buttons;
 Motors motors;
 Cameras cameras;
 LedStrip led_strip;
