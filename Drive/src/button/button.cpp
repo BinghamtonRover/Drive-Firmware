@@ -31,6 +31,9 @@ void LedButton::turnOff() {
 void Buttons::setup() {
   yellow.setup();
   green.setup();
+  data.status = RoverStatus::RoverStatus_MANUAL;
+  green.turnOn();
+  yellow.turnOff();
 }
 
 void Buttons::update() {
