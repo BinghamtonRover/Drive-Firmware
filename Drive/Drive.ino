@@ -14,12 +14,12 @@ const Version version = {major: 1, minor: 0};
 
 void handleCommand(const uint8_t* data, int length);
 void handleMotorOutput(const uint8_t* data, int length) { motors.handleMotorOutput(data, length); }
-void sendData();
 
 BurtSerial serial(Device::Device_DRIVE, handleCommand, DriveData_fields, DriveData_size);
 BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, handleCommand);
 BurtCan<Can1> motorCan(0, handleMotorOutput, true);
 
+void sendData();
 void updateMotors() { motors.sendMotorCommands(motorCan); }
 void updateLedStrip() { led_strip.update(); }
 
@@ -31,7 +31,7 @@ void setup() {
 	Serial.begin(9600);
   Serial.println("Initializing Drive subsystem");
 
-  Serial.println("Initializing communications...");
+  Serial.println("Initializing software...");
 	roverCan.setup();
 	motorCan.setup();
 	serial.setup();
@@ -55,7 +55,6 @@ void loop() {
 	dataTimer.update();
 	motorTimer.update();
 	blinkTimer.update();
-
 	buttons.update();
 	voltageSensor.update();
 }
