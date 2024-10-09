@@ -15,7 +15,13 @@ const Version version = {major: 1, minor: 1};
 void handleCommand(const uint8_t* data, int length);
 void handleMotorOutput(const uint8_t* data, int length) { motors.handleMotorOutput(data, length); }
 
-BurtSerial serial(Device::Device_DRIVE, handleCommand, DriveData_fields, DriveData_size);
+// CHANGED TO ADD ON DISCONNECT CALLBACK
+void onDisconnect() { Serial.println("Disconnected"); }
+
+// CHANGED TO ADD NEW CONSTRUCTOR INPUT
+BurtSerial serial(Device::Device_DRIVE, handleCommand, 
+DriveData_fields, DriveData_size, onDisconnect);
+
 BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, handleCommand);
 BurtCan<Can1> motorCan(0, handleMotorOutput, true);
 
@@ -28,6 +34,13 @@ BurtTimer motorTimer(MOTOR_UPDATE_INTERVAL, updateMotors);
 BurtTimer blinkTimer(blinkInterval, updateLedStrip);
 
 void setup() {
+  int initTime = millis();
+  // FOR TESTING
+  pinMode(13, OUTPUT);
+
+  // CHANGED TO ADD SERIAL SETUP
+	serial.setup();
+
 	Serial.begin(9600);
   Serial.println("Initializing Drive subsystem");
 
@@ -47,9 +60,13 @@ void setup() {
 	voltageSensor.setup();
 
   Serial.println("Drive subsystem initialized");
+  Serial.println("Total Setup Time: " + String(millis() - initTime));
 }
 
 void loop() {
+  if(serial.isConnected) digitalWrite(13, HIGH);
+  else digitalWrite(13, LOW);
+
 	serial.update();
 	roverCan.update();
 	motorCan.update();
