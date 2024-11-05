@@ -33,7 +33,11 @@ void Motors::sendMotorCommands(BurtCan<Can1> &can) {
 }
 
 void Motors::handleMotorOutput(const uint8_t* data, int length) {
-  // TODO
+  for (int i = 0; i < length; i++) {
+    Serial.print(data[i], HEX);
+    Serial.print(" ");
+  }
+  Serial.println("");
 }
 
 void Motors::setup() {

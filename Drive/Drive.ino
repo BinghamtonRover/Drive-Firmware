@@ -8,16 +8,19 @@
 #define DRIVE_DATA_ID      0x14
 
 #define DATA_SEND_INTERVAL 250  // ms
-#define MOTOR_UPDATE_INTERVAL 0  // ms
+#define MOTOR_UPDATE_INTERVAL 1000  // ms
 
 const Version version = {major: 1, minor: 1};
 
 void handleCommand(const uint8_t* data, int length);
-void handleMotorOutput(const uint8_t* data, int length) { motors.handleMotorOutput(data, length); }
+void handleMotorOutput(const uint8_t* data, int length) 
+{ 
+  motors.handleMotorOutput(data, length); 
+}
 
 BurtSerial serial(Device::Device_DRIVE, handleCommand, DriveData_fields, DriveData_size);
 BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, handleCommand);
-BurtCan<Can1> motorCan(0, handleMotorOutput, true);
+BurtCan<Can1> motorCan(0x00002905, handleMotorOutput, true);
 
 void sendData();
 void updateMotors() { motors.sendMotorCommands(motorCan); }
@@ -34,6 +37,7 @@ void setup() {
   Serial.println("Initializing software...");
 	roverCan.setup();
 	motorCan.setup();
+	motorCan.showDebugInfo();
 	serial.setup();
 	dataTimer.setup();
 	motorTimer.setup();
