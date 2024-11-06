@@ -1,10 +1,7 @@
+
 #include <Arduino.h>
 
 #include "led_strip.h"
-
-const int redPin = 14;
-const int greenPin = 15;
-const int bluePin = 16;
 
 void LedStrip::setup() {
   pinMode(redPin, OUTPUT);
@@ -18,6 +15,7 @@ void LedStrip::red() {
   greenValue = LOW;
   blueValue = LOW;
   data.color = ProtoColor::ProtoColor_RED;
+  oldColor = ProtoColor::ProtoColor_RED;
 }
 
 void LedStrip::green() {
@@ -25,6 +23,7 @@ void LedStrip::green() {
   greenValue = HIGH;
   blueValue = LOW;
   data.color = ProtoColor::ProtoColor_GREEN;
+  oldColor = ProtoColor::ProtoColor_GREEN;
 }
 
 void LedStrip::blue() {
@@ -32,6 +31,7 @@ void LedStrip::blue() {
   greenValue = LOW;
   blueValue = HIGH;
   data.color = ProtoColor::ProtoColor_BLUE;
+  oldColor = ProtoColor::ProtoColor_BLUE;
 }
 
 void LedStrip::off() {
@@ -47,7 +47,8 @@ void LedStrip::update() {
   } else {
     digitalWrite(redPin, redValue);
     digitalWrite(greenPin, greenValue);
-    digitalWrite(bluePin, blueValue);  
+    digitalWrite(bluePin, blueValue);
+    data.color = oldColor;
   }
   isOn = !isOn;
 }

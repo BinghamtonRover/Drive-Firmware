@@ -1,13 +1,13 @@
 #include "button.h"
 
-LedButton::LedButton(int ledPin, int buttonPin) : 
+LedButton::LedButton(int ledPin, int buttonPin) :
   ledPin(ledPin),
   buttonPin(buttonPin)
   { }
 
 void LedButton::setup() {
   pinMode(ledPin, OUTPUT);
-  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(buttonPin, INPUT_PULLDOWN);
 }
 
 void LedButton::update() {
@@ -37,9 +37,15 @@ void Buttons::setup() {
 }
 
 void Buttons::update() {
+  green.update();
+  yellow.update();
   if (yellow.wasPressed()) {
 		data.status = RoverStatus::RoverStatus_IDLE;
+    green.turnOff();
+    yellow.turnOn();
 	} else if (green.wasPressed()) {
+    green.turnOn();
+    yellow.turnOff();
 		data.status = RoverStatus::RoverStatus_MANUAL;
 	}
 }
