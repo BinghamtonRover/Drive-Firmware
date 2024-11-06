@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include "../drive.pb.h"
 
-const int greenLedPin = 1;
-const int greenButtonPin = 6;
-const int yellowLedPin = 2;
-const int yellowButtonPin = 7;
+const int greenLedPin = 2;
+const int greenButtonPin = 7;
+const int yellowLedPin = 3;
+const int yellowButtonPin = 6;
 
 class LedButton {
   private: 

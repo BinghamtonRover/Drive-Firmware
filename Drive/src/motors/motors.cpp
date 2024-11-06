@@ -2,13 +2,6 @@
 
 const int maxRpm = 40'000;
 
-const int leftMotor1 = 0x302;
-const int leftMotor2 = 0x307;
-const int leftMotor3 = 0x301;
-const int rightMotor1 = 0x303;
-const int rightMotor2 = 0x308;
-const int rightMotor3 = 0x305;
-
 void Motors::updateBuffer(float speed, uint8_t* buffer) {
   int adjusted = maxRpm * throttle * speed;
 	if (abs(adjusted) < 5) adjusted = 0;

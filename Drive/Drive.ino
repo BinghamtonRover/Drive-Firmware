@@ -45,6 +45,7 @@ void setup() {
 	cameras.setup();
 	led_strip.setup();
 	voltageSensor.setup();
+	temperatureSensor.setup();
 
   Serial.println("Drive subsystem initialized");
 }
@@ -58,17 +59,20 @@ void loop() {
 	blinkTimer.update();
 	buttons.update();
 	voltageSensor.update();
+	temperatureSensor.update();
 }
 
 void sendData() {
-	DriveData versionData = {version: version};
-	versionData.has_version = true;
-	serial.send(&versionData);
+  DriveData data = DriveData_init_zero;
+  data.version = version;
+	data.has_version = true;
+  serial.send(&data);
 	serial.send(&buttons.data);
 	serial.send(&motors.data);
 	serial.send(&cameras.data);
 	serial.send(&led_strip.data);
 	serial.send(&voltageSensor.data);
+	// serial.send(&temperatureSensor.data);
 }
 
 void handleCommand(const uint8_t* data, int length) {

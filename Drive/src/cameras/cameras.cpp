@@ -1,18 +1,18 @@
 #include <Arduino.h>
 #include "cameras.h"
 
-const int frontSwivelPin = 4;
-const int frontTiltPin = 5;
-const int backSwivelPin = 33;
-const int backTiltPin = 36;
+const int frontSwivelPin = 33;
+const int frontTiltPin = 36;
+const int backSwivelPin = 4;
+const int backTiltPin = 5;
 
 void Cameras::setup() {
   frontSwivel.attach(frontSwivelPin);
-  delay(1000);
+  delay(2000);
   frontTilt.attach(frontTiltPin);
-  delay(1000);
+  delay(2000);
   backSwivel.attach(backSwivelPin);
-  delay(1000);
+  delay(2000);
   backTilt.attach(backTiltPin);
 }
 

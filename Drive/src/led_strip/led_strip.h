@@ -8,8 +8,8 @@ class LedStrip {
     int redValue;
     int greenValue;
     int blueValue;
-    bool shouldBlink = false;
     bool isOn;
+    ProtoColor oldColor = ProtoColor::ProtoColor_UNLIT;
   
   public: 
     DriveData data;
@@ -19,6 +19,7 @@ class LedStrip {
     void green();
     void blue();
     void off();
+    bool shouldBlink = false;
 
     void update();
     void handleCommand(DriveCommand command);
