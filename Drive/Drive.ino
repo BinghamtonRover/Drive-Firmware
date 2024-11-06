@@ -72,7 +72,7 @@ void sendData() {
 	serial.send(&cameras.data);
 	serial.send(&led_strip.data);
 	serial.send(&voltageSensor.data);
-	// serial.send(&temperatureSensor.data);
+	serial.send(&temperatureSensor.data);
 }
 
 void handleCommand(const uint8_t* data, int length) {

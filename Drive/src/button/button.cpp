@@ -1,6 +1,6 @@
 #include "button.h"
 
-LedButton::LedButton(int ledPin, int buttonPin) : 
+LedButton::LedButton(int ledPin, int buttonPin) :
   ledPin(ledPin),
   buttonPin(buttonPin)
   { }
@@ -39,11 +39,7 @@ void Buttons::setup() {
 void Buttons::update() {
   green.update();
   yellow.update();
-  // TODO: Not working
-  // Serial.print("Yellow: ");
-  // Serial.println(digitalRead(yellowButtonPin));
   if (yellow.wasPressed()) {
-    // Serial.println("Yellow");
 		data.status = RoverStatus::RoverStatus_IDLE;
     green.turnOff();
     yellow.turnOn();

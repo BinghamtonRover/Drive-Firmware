@@ -5,9 +5,10 @@
 #include "src/voltage/voltage.h"
 #include "src/temperature/temperature.h"
 
-Buttons buttons;
-Motors motors;
-Cameras cameras;
-LedStrip led_strip;
+Buttons buttons;     // see src/button/button.h for pinouts
+Motors motors;       // see src/motors/motors.h for CAN IDs
+Cameras cameras;     // see src/cameras/cameras for pinouts
+LedStrip led_strip;  // see src/led_strip/led_strip for pinouts
+
 VoltageSensor voltageSensor(41);
 TemperatureSensor temperatureSensor(21);

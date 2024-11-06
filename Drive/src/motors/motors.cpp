@@ -1,7 +1,5 @@
 #include "motors.h"
 
-const int maxRpm = 40'000;
-
 void Motors::updateBuffer(float speed, uint8_t* buffer) {
   int adjusted = maxRpm * throttle * speed;
 	if (abs(adjusted) < 5) adjusted = 0;

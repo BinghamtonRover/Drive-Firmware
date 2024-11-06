@@ -3,10 +3,6 @@
 
 #include "led_strip.h"
 
-const int redPin = 14;
-const int greenPin = 15;
-const int bluePin = 16;
-
 void LedStrip::setup() {
   pinMode(redPin, OUTPUT);
   pinMode(greenPin, OUTPUT);
@@ -51,7 +47,7 @@ void LedStrip::update() {
   } else {
     digitalWrite(redPin, redValue);
     digitalWrite(greenPin, greenValue);
-    digitalWrite(bluePin, blueValue);  
+    digitalWrite(bluePin, blueValue);
     data.color = oldColor;
   }
   isOn = !isOn;

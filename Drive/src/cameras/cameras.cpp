@@ -1,11 +1,6 @@
 #include <Arduino.h>
 #include "cameras.h"
 
-const int frontSwivelPin = 33;
-const int frontTiltPin = 36;
-const int backSwivelPin = 4;
-const int backTiltPin = 5;
-
 void Cameras::setup() {
   frontSwivel.attach(frontSwivelPin);
   delay(2000);
@@ -30,7 +25,7 @@ void Cameras::handleCommand(DriveCommand command) {
     data.rear_swivel = command.rear_swivel;
   }
 	if (command.rear_tilt != 0) {
-    backTilt.write(command.rear_tilt); 
+    backTilt.write(command.rear_tilt);
     data.rear_tilt = command.rear_tilt;
   }
 }
