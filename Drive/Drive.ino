@@ -1,4 +1,4 @@
-#include <Servo.h>
+// #include <Servo.h>
 
 #include "pinouts.h"
 #include "src/utils/BURT_utils.h"
@@ -12,10 +12,12 @@
 
 const Version version = {major: 1, minor: 1};
 
+const int errorPin = 9;
+
 void handleCommand(const uint8_t* data, int length);
-void handleMotorOutput(const uint8_t* data, int length) 
+void handleMotorOutput(uint32_t id, const uint8_t* data, int length) 
 { 
-  motors.handleMotorOutput(data, length); 
+  motors.handleMotorOutput(id, data, length); 
 }
 
 BurtSerial serial(Device::Device_DRIVE, handleCommand, DriveData_fields, DriveData_size);
@@ -31,6 +33,7 @@ BurtTimer motorTimer(MOTOR_UPDATE_INTERVAL, updateMotors);
 BurtTimer blinkTimer(blinkInterval, updateLedStrip);
 
 void setup() {
+  pinMode(errorPin, OUTPUT);
 	Serial.begin(9600);
   Serial.println("Initializing Drive subsystem");
 
@@ -55,12 +58,12 @@ void setup() {
 void loop() {
 	serial.update();
 	roverCan.update();
+	buttons.update();
+	voltageSensor.update();
 	motorCan.update();
 	dataTimer.update();
 	motorTimer.update();
 	blinkTimer.update();
-	buttons.update();
-	voltageSensor.update();
 }
 
 void sendData() {

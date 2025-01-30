@@ -3,11 +3,11 @@
 const int maxRpm = 40'000;
 
 const int leftMotor1 = 0x302;
-const int leftMotor2 = 0x307;
-const int leftMotor3 = 0x301;
-const int rightMotor1 = 0x303;
-const int rightMotor2 = 0x308;
-const int rightMotor3 = 0x305;
+const int leftMotor2 = 0x305;
+const int leftMotor3 = 0x30c;
+const int rightMotor1 = 0x30d;
+const int rightMotor2 = 0x30a;
+const int rightMotor3 = 0x30b;
 
 void Motors::updateBuffer(float speed, uint8_t* buffer) {
   int adjusted = maxRpm * throttle * speed;
@@ -32,8 +32,7 @@ void Motors::sendMotorCommands(BurtCan<Can1> &can) {
   can.sendRaw(rightMotor3, rightBuffer, 4);
 }
 
-void Motors::handleMotorOutput(const uint8_t* Data, int length) {
-    Serial.println("Got can Message");
+void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
     typedef struct MotorData {
         float motorSpeed;
         float motorCurrent;

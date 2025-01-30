@@ -16,7 +16,7 @@ class Motors {
   
     void setup();
     void sendMotorCommands(BurtCan<Can1> &can);
-    void handleMotorOutput(const uint8_t* data, int length);
+    void handleMotorOutput(uint32_t id, const uint8_t* data, int length);
     void handleCommand(DriveCommand command);
 
     void stop();
