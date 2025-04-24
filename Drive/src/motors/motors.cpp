@@ -77,7 +77,7 @@ void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
     else {
         data.motorError = UNKNOWN_ERROR;  // Handl unknown error codes, in case the motor sends broken data
     }
-    Serial.println(data.motorSpeed);
+    // Serial.println(data.motorSpeed);
 }
 
 void Motors::setup() {

@@ -8,7 +8,7 @@
 #define DRIVE_DATA_ID      0x14
 
 #define DATA_SEND_INTERVAL 250  // ms
-#define MOTOR_UPDATE_INTERVAL 250  // ms
+#define MOTOR_UPDATE_INTERVAL 10  // ms
 
 const Version version = {major: 1, minor: 1};
 
@@ -22,7 +22,7 @@ void handleMotorOutput(uint32_t id, const uint8_t* data, int length)
 
 BurtSerial serial(Device::Device_DRIVE, handleCommand, DriveData_fields, DriveData_size);
 BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, handleCommand);
-BurtCan<Can1> motorCan(0x00002901, 0x00002906, handleMotorOutput, true);
+BurtCan<Can1> motorCan(0x00002901, 0x0000290D, handleMotorOutput, true);
 
 void sendData();
 void updateMotors() { motors.sendMotorCommands(motorCan); }
@@ -35,9 +35,9 @@ BurtTimer blinkTimer(blinkInterval, updateLedStrip);
 void setup() {
   pinMode(errorPin, OUTPUT);
 	Serial.begin(9600);
-  Serial.println("Initializing Drive subsystem");
+  // Serial.println("Initializing Drive subsystem");
 
-  Serial.println("Initializing software...");
+  // Serial.println("Initializing software...");
 	roverCan.setup();
 	motorCan.setup();
 	serial.setup();
@@ -45,14 +45,14 @@ void setup() {
 	motorTimer.setup();
 	blinkTimer.setup();
 
-	Serial.println("Initializing hardware...");
+	// Serial.println("Initializing hardware...");
 	motors.setup();
 	buttons.setup();
 	cameras.setup();
 	led_strip.setup();
 	voltageSensor.setup();
 
-  Serial.println("Drive subsystem initialized");
+  // Serial.println("Drive subsystem initialized");
 }
 
 void loop() {
