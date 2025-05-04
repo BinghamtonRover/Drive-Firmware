@@ -32,37 +32,41 @@ void Motors::sendMotorCommands(BurtCan<Can1> &can) {
   can.sendRaw(rightMotor3, rightBuffer, 4);
 }
 
+// TODO: Move this to Protobuf
+typedef enum MotorErrorCode {
+  NO_FAULT = 0,
+  MOTOR_OVER_TEMP = 1,
+  OVER_CURRENT = 2,
+  OVER_VOLTAGE = 3,
+  UNDER_VOLTAGE = 4,
+  ENCODER_FAULT = 5,
+  MOSFET_OVER_TEMP = 6,
+  UNKNOWN_ERROR = 7
+} MotorErrorCode;
+
+typedef struct MotorData {
+  float speed;
+  float current;
+  int8_t temperature;
+  MotorErrorCode error;
+} MotorData;
+
+
 void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
-    typedef struct MotorData {
-        float motorSpeed;
-        float motorCurrent;
-        int8_t motorTemp;
-        int8_t motorError;
-    } MotorData;
+  // The motor sends an 8-byte payload:
+  MotorData data;
 
-    // Define enum for error codes
-    enum MotorErrorCode {
-        NO_FAULT = 0,
-        MOTOR_OVER_TEMP = 1,
-        OVER_CURRENT = 2,
-        OVER_VOLTAGE = 3,
-        UNDER_VOLTAGE = 4,
-        ENCODER_FAULT = 5,
-        MOSFET_OVER_TEMP = 6,
-        UNKNOWN_ERROR = 7
-    };
+  // - Position as a signed, 16-bit integer on bytes 0 and 1, unused
+  // - Speed as a signed, 16-bit integer on bytes 2 and 3, multiplied by 10
+  int16_t speed_int = (Data[2] << 8) | Data[3];
+  data.speed = speed_int * 10.0;
 
-    MotorData data;
+  // - Current as a signed, 16-bit integer on bytes 4 and 5, multipled by 0.01
+  int16_t current_int = (Data[4] << 8) | Data[5];
+  data.current = current_int * 0.01;
 
-    // Extract motor speed (2 bytes: Data[2] and Data[3])
-    int16_t speed_int = (Data[2] << 8) | Data[3];
-
-    // Extract motor current (2 bytes: Data[4] and Data[5])
-    int16_t current_int = (Data[4] << 8) | Data[5];
-
-    // Convert to floats with scaling factors and assign to pointers
-    data.motorSpeed = (float)(speed_int * 10.0); // Motor Speed (scaled by 10.0)
-    data.motorCurrent = (float)(current_int * 0.01); // Motor Current (scaled by 0.01)
+  // - Temperature as a signed, 8-byte integer on byte 6
+  data.temperature = Data[6];
 
     // Extract temperature and error code (1 byte each)
     data.motorTemp = Data[6];     // Motor Temperature
@@ -70,14 +74,8 @@ void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
     // Extract motor error code
     uint8_t error_code = Data[7];
 
-    // C-style cast to MotorErrorCode enum
-    if (error_code <= UNKNOWN_ERROR) { 
-        data.motorError = error_code;
-    }
-    else {
-        data.motorError = UNKNOWN_ERROR;  // Handl unknown error codes, in case the motor sends broken data
-    }
-    // Serial.println(data.motorSpeed);
+    data.error = error_code <= UNKNOWN_ERROR
+      ? (MotorErrorCode) error_code : UNKNOWN_ERROR;
 }
 
 void Motors::setup() {

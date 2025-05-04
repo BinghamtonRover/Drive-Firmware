@@ -15,14 +15,12 @@ const Version version = {major: 1, minor: 1};
 const int errorPin = 9;
 
 void handleCommand(const uint8_t* data, int length);
-void handleMotorOutput(uint32_t id, const uint8_t* data, int length) 
-{ 
-  motors.handleMotorOutput(id, data, length); 
+void handleMotorOutput(uint32_t id, const uint8_t* data, int length) {
+  motors.handleMotorOutput(id, data, length);
 }
 
 BurtSerial serial(Device::Device_DRIVE, handleCommand, DriveData_fields, DriveData_size);
-BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, handleCommand);
-BurtCan<Can1> motorCan(0x00002901, 0x0000290D, handleMotorOutput, true);
+BurtCan<Can1> motorCan(0x00002901, 0x0000290e, handleMotorOutput, true);
 
 void sendData();
 void updateMotors() { motors.sendMotorCommands(motorCan); }
@@ -56,8 +54,8 @@ void setup() {
 }
 
 void loop() {
-	serial.update();
-	roverCan.update();
+	// serial.update();
+	// roverCan.update();
 	buttons.update();
 	voltageSensor.update();
 	motorCan.update();
@@ -70,11 +68,11 @@ void sendData() {
 	DriveData versionData = {version: version};
 	versionData.has_version = true;
 	serial.send(&versionData);
-	serial.send(&buttons.data);
+	// serial.send(&buttons.data);
 	serial.send(&motors.data);
-	serial.send(&cameras.data);
-	serial.send(&led_strip.data);
-	serial.send(&voltageSensor.data);
+	// serial.send(&cameras.data);
+	// serial.send(&led_strip.data);
+	// serial.send(&voltageSensor.data);
 }
 
 void handleCommand(const uint8_t* data, int length) {
