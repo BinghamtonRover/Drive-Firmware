@@ -32,50 +32,67 @@ void Motors::sendMotorCommands(BurtCan<Can1> &can) {
   can.sendRaw(rightMotor3, rightBuffer, 4);
 }
 
-// TODO: Move this to Protobuf
-typedef enum MotorErrorCode {
-  NO_FAULT = 0,
-  MOTOR_OVER_TEMP = 1,
-  OVER_CURRENT = 2,
-  OVER_VOLTAGE = 3,
-  UNDER_VOLTAGE = 4,
-  ENCODER_FAULT = 5,
-  MOSFET_OVER_TEMP = 6,
-  UNKNOWN_ERROR = 7
-} MotorErrorCode;
-
-typedef struct MotorData {
-  float speed;
-  float current;
-  int8_t temperature;
-  MotorErrorCode error;
-} MotorData;
 
 
 void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
   // The motor sends an 8-byte payload:
-  MotorData data;
-
+  DriveDataContainer motorData;
+  // Set Data Container Id to motor Id
+  motorData.Id = id;
   // - Position as a signed, 16-bit integer on bytes 0 and 1, unused
   // - Speed as a signed, 16-bit integer on bytes 2 and 3, multiplied by 10
   int16_t speed_int = (Data[2] << 8) | Data[3];
-  data.speed = speed_int * 10.0;
+  motorData.speed = speed_int * 10.0;
 
   // - Current as a signed, 16-bit integer on bytes 4 and 5, multipled by 0.01
   int16_t current_int = (Data[4] << 8) | Data[5];
-  data.current = current_int * 0.01;
+  motorData.current = current_int * 0.01;
 
   // - Temperature as a signed, 8-byte integer on byte 6
-  data.temperature = Data[6];
+  motorData.temperature = Data[6];
 
-    // Extract temperature and error code (1 byte each)
-    data.motorTemp = Data[6];     // Motor Temperature
+  // Extract motor error code
+  uint8_t error_code = Data[7];
 
-    // Extract motor error code
-    uint8_t error_code = Data[7];
+  // Max Error code is 7
+  motorData.error = (MotorErrorCode) (error_code <= 7 ? error_code : 7);
 
-    data.error = error_code <= UNKNOWN_ERROR
-      ? (MotorErrorCode) error_code : UNKNOWN_ERROR;
+  switch (id) { //Set motorData to current field
+  case leftMotor1:
+    data.back_left_motor = motorData;
+    data.has_back_left_motor = true;
+    break;
+
+  case leftMotor2:
+    data.middle_left_motor = motorData;
+    data.has_middle_left_motor = true;
+    break;
+
+  case leftMotor3:
+    data.front_left_motor = motorData;
+    data.has_front_left_motor = true;
+    break;
+
+  case rightMotor1:
+    data.back_right_motor = motorData;
+    data.has_back_right_motor = true;
+    break;
+
+  case rightMotor2:
+    data.middle_right_motor = motorData;
+    data.has_middle_right_motor = true;
+    break;
+
+  case rightMotor3:
+    data.front_right_motor = motorData;
+    data.has_front_right_motor = true;
+    break;
+
+  default:
+    // Unknown motor ID
+    break;
+  }
+
 }
 
 void Motors::setup() {

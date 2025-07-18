@@ -15,6 +15,7 @@ const Version version = {major: 1, minor: 1};
 const int errorPin = 9;
 
 void handleCommand(const uint8_t* data, int length);
+
 void handleMotorOutput(uint32_t id, const uint8_t* data, int length) {
   motors.handleMotorOutput(id, data, length);
 }
@@ -68,11 +69,11 @@ void sendData() {
 	DriveData versionData = {version: version};
 	versionData.has_version = true;
 	serial.send(&versionData);
-	// serial.send(&buttons.data);
+	serial.send(&buttons.data);
 	serial.send(&motors.data);
-	// serial.send(&cameras.data);
-	// serial.send(&led_strip.data);
-	// serial.send(&voltageSensor.data);
+	serial.send(&cameras.data);
+	serial.send(&led_strip.data);
+	serial.send(&voltageSensor.data);
 }
 
 void handleCommand(const uint8_t* data, int length) {
