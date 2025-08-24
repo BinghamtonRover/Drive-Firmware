@@ -26,6 +26,10 @@ void Motors::sendMotorCommands(BurtCan<Can1>& can) {
 }
 
 void Motors::handleMotorOutput(uint32_t id, const uint8_t* rawData, int length) {
+	if ((id & 0xFF00) >> 8 != 0x29) {
+		// ID is not a motor output
+		return;
+	}
 	// The motor sends an 8-byte payload:
 	DriveMotorData motorData = DriveMotorData_init_zero;
 	// - Position as a signed, 16-bit integer on bytes 0 and 1, unused

@@ -7,7 +7,7 @@
 #define DRIVE_COMMAND_ID   0x53
 #define DRIVE_DATA_ID      0x14
 
-#define DATA_SEND_INTERVAL 250  // ms
+#define DATA_SEND_INTERVAL 50  // ms
 #define MOTOR_UPDATE_INTERVAL 10  // ms
 
 const Version version = {major: 1, minor: 1};
@@ -21,7 +21,7 @@ void handleMotorOutput(uint32_t id, const uint8_t* data, int length) {
 }
 
 BurtSerial serial(Device::Device_DRIVE, handleCommand, DriveData_fields, DriveData_size);
-BurtCan<Can1> motorCan(0x00002901, 0x0000290e, handleMotorOutput, true);
+BurtCan<Can1> motorCan(0x2901, 0x29FF, handleMotorOutput, true);
 
 void sendData();
 void updateMotors() { motors.sendMotorCommands(motorCan); }
