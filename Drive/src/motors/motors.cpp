@@ -1,12 +1,14 @@
 #include "motors.h"
 
 void Motors::updateBuffer(float speed, uint8_t* buffer) {
-  int adjusted = maxRpm * throttle * speed;
-	if (abs(adjusted) < 5) adjusted = 0;
-  buffer[0] = (adjusted & 0xFF000000) >> 24;
-  buffer[1] = (adjusted & 0x00FF0000) >> 16;
-  buffer[2] = (adjusted & 0x0000FF00) >> 8;
-  buffer[3] = (adjusted & 0x000000FF);
+	int adjusted = maxRpm * throttle * speed;
+	if (abs(adjusted) < 5) {
+		adjusted = 0;
+	}
+	buffer[0] = (adjusted & 0xFF000000) >> 24;
+	buffer[1] = (adjusted & 0x00FF0000) >> 16;
+	buffer[2] = (adjusted & 0x0000FF00) >> 8;
+	buffer[3] = (adjusted & 0x000000FF);
 }
 
 void Motors::updateBuffers() {
@@ -14,13 +16,13 @@ void Motors::updateBuffers() {
 	updateBuffer(right, rightBuffer);
 }
 
-void Motors::sendMotorCommands(BurtCan<Can1> &can) {
-  can.sendRaw((0x3 << 8) | leftMotor1, leftBuffer, 4);
-  can.sendRaw((0x3 << 8) | leftMotor2, leftBuffer, 4);
-  can.sendRaw((0x3 << 8) | leftMotor3, leftBuffer, 4);
-  can.sendRaw((0x3 << 8) | rightMotor1, rightBuffer, 4);
-  can.sendRaw((0x3 << 8) | rightMotor2, rightBuffer, 4);
-  can.sendRaw((0x3 << 8) | rightMotor3, rightBuffer, 4);
+void Motors::sendMotorCommands(BurtCan<Can1>& can) {
+	can.sendRaw((0x3 << 8) | front_left_motor_id, leftBuffer, 4);
+	can.sendRaw((0x3 << 8) | middle_left_motor_id, leftBuffer, 4);
+	can.sendRaw((0x3 << 8) | back_left_motor_id, leftBuffer, 4);
+	can.sendRaw((0x3 << 8) | front_right_motor_id, rightBuffer, 4);
+	can.sendRaw((0x3 << 8) | middle_right_motor_id, rightBuffer, 4);
+	can.sendRaw((0x3 << 8) | back_right_motor_id, rightBuffer, 4);
 }
 
 void Motors::handleMotorOutput(uint32_t id, const uint8_t* rawData, int length) {
@@ -46,27 +48,27 @@ void Motors::handleMotorOutput(uint32_t id, const uint8_t* rawData, int length) 
 
 	// Set motorData to current field
 	switch (id & 0xFF) {
-	case leftMotor1:
+	case front_left_motor_id:
 		data.back_left_motor = motorData;
 		data.has_back_left_motor = true;
 		break;
-	case leftMotor2:
+	case middle_left_motor_id:
 		data.middle_left_motor = motorData;
 		data.has_middle_left_motor = true;
 		break;
-	case leftMotor3:
+	case back_left_motor_id:
 		data.front_left_motor = motorData;
 		data.has_front_left_motor = true;
 		break;
-	case rightMotor1:
+	case front_right_motor_id:
 		data.back_right_motor = motorData;
 		data.has_back_right_motor = true;
 		break;
-	case rightMotor2:
+	case middle_right_motor_id:
 		data.middle_right_motor = motorData;
 		data.has_middle_right_motor = true;
 		break;
-	case rightMotor3:
+	case back_right_motor_id:
 		data.front_right_motor = motorData;
 		data.has_front_right_motor = true;
 		break;
@@ -84,9 +86,9 @@ void Motors::setup() {
 
 void Motors::handleCommand(DriveCommand command) {
 	if (command.set_throttle) {
-    throttle = command.throttle;
-    data.throttle = command.throttle;
-  }
+		throttle = command.throttle;
+		data.throttle = command.throttle;
+	}
 	if (command.set_left) {
 		left = command.left;
 		data.left = command.left;
@@ -95,7 +97,7 @@ void Motors::handleCommand(DriveCommand command) {
 		right = command.right;
 		data.right = command.right;
 	}
-  updateBuffers();
+	updateBuffers();
 }
 
 void Motors::stop() {
