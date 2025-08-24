@@ -65,7 +65,7 @@ class Motors {
     void sendMotorCommands(BurtCan<Can1> &can);
 
     /// Parses and records output from a given motor.
-    void handleMotorOutput(uint32_t id, const uint8_t* data, int length);
+    void handleMotorOutput(const CanMessage& message);
 
     /// Handles a command to change speeds from the Dashboard.
     void handleCommand(DriveCommand command);

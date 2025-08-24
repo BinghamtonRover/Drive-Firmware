@@ -16,8 +16,8 @@ const int errorPin = 9;
 
 void handleCommand(const uint8_t* data, int length);
 
-void handleMotorOutput(uint32_t id, const uint8_t* data, int length) {
-  motors.handleMotorOutput(id, data, length);
+void handleMotorOutput(const CanMessage& message) {
+  motors.handleMotorOutput(message);
 }
 
 BurtSerial serial(Device::Device_DRIVE, handleCommand, DriveData_fields, DriveData_size);
