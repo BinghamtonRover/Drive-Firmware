@@ -90,18 +90,18 @@ typedef struct _DriveData {
     ProtoColor color;
     RoverStatus status;
     /* Contains the DriveMotorData for each corresponding motor */
-    bool has_back_left_motor;
-    DriveMotorData back_left_motor;
-    bool has_middle_left_motor;
-    DriveMotorData middle_left_motor;
     bool has_front_left_motor;
     DriveMotorData front_left_motor;
-    bool has_back_right_motor;
-    DriveMotorData back_right_motor;
-    bool has_middle_right_motor;
-    DriveMotorData middle_right_motor;
+    bool has_middle_left_motor;
+    DriveMotorData middle_left_motor;
+    bool has_back_left_motor;
+    DriveMotorData back_left_motor;
     bool has_front_right_motor;
     DriveMotorData front_right_motor;
+    bool has_middle_right_motor;
+    DriveMotorData middle_right_motor;
+    bool has_back_right_motor;
+    DriveMotorData back_right_motor;
 } DriveData;
 
 
@@ -171,12 +171,12 @@ extern "C" {
 #define DriveData_version_tag                    14
 #define DriveData_color_tag                      21
 #define DriveData_status_tag                     22
-#define DriveData_back_left_motor_tag            23
+#define DriveData_front_left_motor_tag           23
 #define DriveData_middle_left_motor_tag          24
-#define DriveData_front_left_motor_tag           25
-#define DriveData_back_right_motor_tag           26
+#define DriveData_back_left_motor_tag            25
+#define DriveData_front_right_motor_tag          26
 #define DriveData_middle_right_motor_tag         27
-#define DriveData_front_right_motor_tag          28
+#define DriveData_back_right_motor_tag           28
 
 /* Struct field encoding specification for nanopb */
 #define DriveCommand_FIELDLIST(X, a) \
@@ -223,21 +223,21 @@ X(a, STATIC,   SINGULAR, FLOAT,    battery_temperature,  13) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  version,          14) \
 X(a, STATIC,   SINGULAR, UENUM,    color,            21) \
 X(a, STATIC,   SINGULAR, UENUM,    status,           22) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  back_left_motor,  23) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  front_left_motor,  23) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  middle_left_motor,  24) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  front_left_motor,  25) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  back_right_motor,  26) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  back_left_motor,  25) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  front_right_motor,  26) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  middle_right_motor,  27) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  front_right_motor,  28)
+X(a, STATIC,   OPTIONAL, MESSAGE,  back_right_motor,  28)
 #define DriveData_CALLBACK NULL
 #define DriveData_DEFAULT NULL
 #define DriveData_version_MSGTYPE Version
-#define DriveData_back_left_motor_MSGTYPE DriveMotorData
-#define DriveData_middle_left_motor_MSGTYPE DriveMotorData
 #define DriveData_front_left_motor_MSGTYPE DriveMotorData
-#define DriveData_back_right_motor_MSGTYPE DriveMotorData
-#define DriveData_middle_right_motor_MSGTYPE DriveMotorData
+#define DriveData_middle_left_motor_MSGTYPE DriveMotorData
+#define DriveData_back_left_motor_MSGTYPE DriveMotorData
 #define DriveData_front_right_motor_MSGTYPE DriveMotorData
+#define DriveData_middle_right_motor_MSGTYPE DriveMotorData
+#define DriveData_back_right_motor_MSGTYPE DriveMotorData
 
 extern const pb_msgdesc_t DriveCommand_msg;
 extern const pb_msgdesc_t DriveMotorData_msg;
