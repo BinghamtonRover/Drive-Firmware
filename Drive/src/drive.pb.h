@@ -58,7 +58,6 @@ typedef struct _DriveCommand {
 } DriveCommand;
 
 typedef struct _DriveMotorData {
-    int32_t Id;
     float speed;
     float current;
     int32_t temperature;
@@ -138,10 +137,10 @@ extern "C" {
 
 /* Initializer values for message structs */
 #define DriveCommand_init_default                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_default, _ProtoColor_MIN, _BoolState_MIN}
-#define DriveMotorData_init_default              {0, 0, 0, 0, _MotorErrorCode_MIN}
+#define DriveMotorData_init_default              {0, 0, 0, _MotorErrorCode_MIN}
 #define DriveData_init_default                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_default, 0, 0, 0, 0, 0, 0, _ProtoColor_MIN, _RoverStatus_MIN, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default}
 #define DriveCommand_init_zero                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_zero, _ProtoColor_MIN, _BoolState_MIN}
-#define DriveMotorData_init_zero                 {0, 0, 0, 0, _MotorErrorCode_MIN}
+#define DriveMotorData_init_zero                 {0, 0, 0, _MotorErrorCode_MIN}
 #define DriveData_init_zero                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_zero, 0, 0, 0, 0, 0, 0, _ProtoColor_MIN, _RoverStatus_MIN, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -159,11 +158,10 @@ extern "C" {
 #define DriveCommand_version_tag                 12
 #define DriveCommand_color_tag                   13
 #define DriveCommand_blink_tag                   14
-#define DriveMotorData_Id_tag                    1
-#define DriveMotorData_speed_tag                 2
-#define DriveMotorData_current_tag               3
-#define DriveMotorData_temperature_tag           4
-#define DriveMotorData_error_tag                 5
+#define DriveMotorData_speed_tag                 1
+#define DriveMotorData_current_tag               2
+#define DriveMotorData_temperature_tag           3
+#define DriveMotorData_error_tag                 4
 #define DriveData_throttle_tag                   1
 #define DriveData_left_tag                       2
 #define DriveData_right_tag                      3
@@ -214,11 +212,10 @@ X(a, STATIC,   SINGULAR, UENUM,    blink,            14)
 #define DriveCommand_version_MSGTYPE Version
 
 #define DriveMotorData_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, INT32,    Id,                1) \
-X(a, STATIC,   SINGULAR, FLOAT,    speed,             2) \
-X(a, STATIC,   SINGULAR, FLOAT,    current,           3) \
-X(a, STATIC,   SINGULAR, INT32,    temperature,       4) \
-X(a, STATIC,   SINGULAR, UENUM,    error,             5)
+X(a, STATIC,   SINGULAR, FLOAT,    speed,             1) \
+X(a, STATIC,   SINGULAR, FLOAT,    current,           2) \
+X(a, STATIC,   SINGULAR, INT32,    temperature,       3) \
+X(a, STATIC,   SINGULAR, UENUM,    error,             4)
 #define DriveMotorData_CALLBACK NULL
 #define DriveMotorData_DEFAULT NULL
 
@@ -273,8 +270,8 @@ extern const pb_msgdesc_t DriveData_msg;
 /* Maximum encoded size of messages (where known) */
 #define DRIVE_PB_H_MAX_SIZE                      DriveData_size
 #define DriveCommand_size                        71
-#define DriveData_size                           343
-#define DriveMotorData_size                      34
+#define DriveData_size                           277
+#define DriveMotorData_size                      23
 
 #ifdef __cplusplus
 } /* extern "C" */
