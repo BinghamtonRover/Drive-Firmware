@@ -36,7 +36,7 @@ void Motors::sendMotorCommands(BurtCan<Can1> &can) {
 
 void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
   // The motor sends an 8-byte payload:
-  DriveDataContainer motorData;
+  DriveMotorData motorData;
   // Set Data Container Id to motor Id
   motorData.Id = id;
   // - Position as a signed, 16-bit integer on bytes 0 and 1, unused

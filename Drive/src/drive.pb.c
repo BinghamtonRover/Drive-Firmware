@@ -9,7 +9,7 @@
 PB_BIND(DriveCommand, DriveCommand, AUTO)
 
 
-PB_BIND(DriveDataContainer, DriveDataContainer, AUTO)
+PB_BIND(DriveMotorData, DriveMotorData, AUTO)
 
 
 PB_BIND(DriveData, DriveData, AUTO)
