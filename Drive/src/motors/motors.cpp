@@ -15,12 +15,12 @@ void Motors::updateBuffers() {
 }
 
 void Motors::sendMotorCommands(BurtCan<Can1> &can) {
-  can.sendRaw((0x30 << 8) | leftMotor1, leftBuffer, 4);
-  can.sendRaw((0x30 << 8) | leftMotor2, leftBuffer, 4);
-  can.sendRaw((0x30 << 8) | leftMotor3, leftBuffer, 4);
-  can.sendRaw((0x30 << 8) | rightMotor1, rightBuffer, 4);
-  can.sendRaw((0x30 << 8) | rightMotor2, rightBuffer, 4);
-  can.sendRaw((0x30 << 8) | rightMotor3, rightBuffer, 4);
+  can.sendRaw((0x3 << 8) | leftMotor1, leftBuffer, 4);
+  can.sendRaw((0x3 << 8) | leftMotor2, leftBuffer, 4);
+  can.sendRaw((0x3 << 8) | leftMotor3, leftBuffer, 4);
+  can.sendRaw((0x3 << 8) | rightMotor1, rightBuffer, 4);
+  can.sendRaw((0x3 << 8) | rightMotor2, rightBuffer, 4);
+  can.sendRaw((0x3 << 8) | rightMotor3, rightBuffer, 4);
 }
 
 void Motors::handleMotorOutput(uint32_t id, const uint8_t* rawData, int length) {
