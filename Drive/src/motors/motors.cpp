@@ -15,73 +15,65 @@ void Motors::updateBuffers() {
 }
 
 void Motors::sendMotorCommands(BurtCan<Can1> &can) {
-  can.sendRaw(leftMotor1, leftBuffer, 4);
-  can.sendRaw(leftMotor2, leftBuffer, 4);
-  can.sendRaw(leftMotor3, leftBuffer, 4);
-  can.sendRaw(rightMotor1, rightBuffer, 4);
-  can.sendRaw(rightMotor2, rightBuffer, 4);
-  can.sendRaw(rightMotor3, rightBuffer, 4);
+  can.sendRaw((0x30 << 8) | leftMotor1, leftBuffer, 4);
+  can.sendRaw((0x30 << 8) | leftMotor2, leftBuffer, 4);
+  can.sendRaw((0x30 << 8) | leftMotor3, leftBuffer, 4);
+  can.sendRaw((0x30 << 8) | rightMotor1, rightBuffer, 4);
+  can.sendRaw((0x30 << 8) | rightMotor2, rightBuffer, 4);
+  can.sendRaw((0x30 << 8) | rightMotor3, rightBuffer, 4);
 }
 
-void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
-  // The motor sends an 8-byte payload:
-  DriveMotorData motorData;
-  // - Position as a signed, 16-bit integer on bytes 0 and 1, unused
-  // - Speed as a signed, 16-bit integer on bytes 2 and 3, multiplied by 10
-  int16_t speed_int = static_cast<int16_t>((Data[2] << 8) | Data[3]);
-  motorData.speed = speed_int * 10.0;
+void Motors::handleMotorOutput(uint32_t id, const uint8_t* rawData, int length) {
+	// The motor sends an 8-byte payload:
+	DriveMotorData motorData = DriveMotorData_init_zero;
+	// - Position as a signed, 16-bit integer on bytes 0 and 1, unused
+	// - Speed as a signed, 16-bit integer on bytes 2 and 3, multiplied by 10
+	int16_t speedInt = static_cast<int16_t>((rawData[2] << 8) | rawData[3]);
+	motorData.speed = speedInt * 10.0f;
 
-  // - Current as a signed, 16-bit integer on bytes 4 and 5, multipled by 0.01
-  int16_t current_int = static_cast<int16_t>(Data[4] << 8) | Data[5];
-  motorData.current = current_int * 0.01;
+	// - Current as a signed, 16-bit integer on bytes 4 and 5, multipled by 0.01
+	int16_t currentInt = static_cast<int16_t>(rawData[4] << 8) | rawData[5];
+	motorData.current = currentInt * 0.01f;
 
-  // - Temperature as a signed, 8-bit integer on byte 6
-  motorData.temperature = static_cast<int16_t>(Data[6]);
+	// - Temperature as a signed, 8-bit integer on byte 6
+	motorData.temperature = static_cast<int16_t>(rawData[6]);
 
-  // Extract motor error code
-  uint8_t error_code = static_cast<int8_t>(Data[7]);
+	// Extract motor error code
+	uint8_t errorCode = rawData[7];
 
-  // Max Error code is 7
-  motorData.error = static_cast<MotorErrorCode>(error_code <= 7 ? error_code : 7);
+	// Max Error code is 7
+	motorData.error = static_cast<MotorErrorCode>(errorCode <= 7 ? error_code : 7);
 
-  int command_id = (id | 0x03<<8); //Convert CAN ID read back to each motor's command ID
-
-  switch (command_id) { //Set motorData to current field
-  case leftMotor1:
-    data.back_left_motor = motorData;
-    data.has_back_left_motor = true;
-    break;
-
-  case leftMotor2:
-    data.middle_left_motor = motorData;
-    data.has_middle_left_motor = true;
-    break;
-
-  case leftMotor3:
-    data.front_left_motor = motorData;
-    data.has_front_left_motor = true;
-    break;
-
-  case rightMotor1:
-    data.back_right_motor = motorData;
-    data.has_back_right_motor = true;
-    break;
-
-  case rightMotor2:
-    data.middle_right_motor = motorData;
-    data.has_middle_right_motor = true;
-    break;
-
-  case rightMotor3:
-    data.front_right_motor = motorData;
-    data.has_front_right_motor = true;
-    break;
-
-  default:
-    // Unknown motor ID
-    break;
-  }
-
+	// Set motorData to current field
+	switch (id & 0xFF) {
+	case leftMotor1:
+		data.back_left_motor = motorData;
+		data.has_back_left_motor = true;
+		break;
+	case leftMotor2:
+		data.middle_left_motor = motorData;
+		data.has_middle_left_motor = true;
+		break;
+	case leftMotor3:
+		data.front_left_motor = motorData;
+		data.has_front_left_motor = true;
+		break;
+	case rightMotor1:
+		data.back_right_motor = motorData;
+		data.has_back_right_motor = true;
+		break;
+	case rightMotor2:
+		data.middle_right_motor = motorData;
+		data.has_middle_right_motor = true;
+		break;
+	case rightMotor3:
+		data.front_right_motor = motorData;
+		data.has_front_right_motor = true;
+		break;
+	default:
+		// Unknown motor ID
+		break;
+	}
 }
 
 void Motors::setup() {
