@@ -3,12 +3,12 @@
 
 const int maxRpm = 40'000;
 
-const uint8_t front_left_motor_id = 2;
-const uint8_t middle_left_motor_id = 5;
-const uint8_t back_left_motor_id = 12;
-const uint8_t front_right_motor_id = 13;
-const uint8_t middle_right_motor_id = 10;
-const uint8_t back_right_motor_id = 11;
+#define FRONT_LEFT_MOTOR_ID 2
+#define MIDDLE_LEFT_MOTOR_ID 5
+#define BACK_LEFT_MOTOR_ID 12
+#define FRONT_RIGHT_MOTOR_ID 13
+#define MIDDLE_RIGHT_MOTOR_ID 10
+#define BACK_RIGHT_MOTOR_ID 11
 
 /// A wrapper class to control all the motors.
 ///

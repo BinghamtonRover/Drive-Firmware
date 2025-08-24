@@ -17,12 +17,14 @@ void Motors::updateBuffers() {
 }
 
 void Motors::sendMotorCommands(BurtCan<Can1>& can) {
-	can.sendRaw((0x3 << 8) | front_left_motor_id, leftBuffer, 4);
-	can.sendRaw((0x3 << 8) | middle_left_motor_id, leftBuffer, 4);
-	can.sendRaw((0x3 << 8) | back_left_motor_id, leftBuffer, 4);
-	can.sendRaw((0x3 << 8) | front_right_motor_id, rightBuffer, 4);
-	can.sendRaw((0x3 << 8) | middle_right_motor_id, rightBuffer, 4);
-	can.sendRaw((0x3 << 8) | back_right_motor_id, rightBuffer, 4);
+	// Set speed RPM
+	static const uint8_t commandID = 3;
+	can.sendRaw(FRONT_LEFT_MOTOR_ID | (commandID << 8), leftBuffer, 4);
+	can.sendRaw(MIDDLE_LEFT_MOTOR_ID | (commandID << 8), leftBuffer, 4);
+	can.sendRaw(BACK_LEFT_MOTOR_ID | (commandID << 8), leftBuffer, 4);
+	can.sendRaw(FRONT_RIGHT_MOTOR_ID | (commandID << 8), rightBuffer, 4);
+	can.sendRaw(MIDDLE_RIGHT_MOTOR_ID | (commandID << 8), rightBuffer, 4);
+	can.sendRaw(BACK_RIGHT_MOTOR_ID | (commandID << 8), rightBuffer, 4);
 }
 
 void Motors::handleMotorOutput(const CanMessage& message) {
@@ -59,27 +61,27 @@ void Motors::handleMotorOutput(const CanMessage& message) {
 
 	// Set motorData to current field
 	switch (message.id & 0xFF) {
-	case front_left_motor_id:
+	case FRONT_LEFT_MOTOR_ID:
 		data.back_left_motor = motorData;
 		data.has_back_left_motor = true;
 		break;
-	case middle_left_motor_id:
+	case MIDDLE_LEFT_MOTOR_ID:
 		data.middle_left_motor = motorData;
 		data.has_middle_left_motor = true;
 		break;
-	case back_left_motor_id:
+	case BACK_LEFT_MOTOR_ID:
 		data.front_left_motor = motorData;
 		data.has_front_left_motor = true;
 		break;
-	case front_right_motor_id:
+	case FRONT_RIGHT_MOTOR_ID:
 		data.back_right_motor = motorData;
 		data.has_back_right_motor = true;
 		break;
-	case middle_right_motor_id:
+	case MIDDLE_RIGHT_MOTOR_ID:
 		data.middle_right_motor = motorData;
 		data.has_middle_right_motor = true;
 		break;
-	case back_right_motor_id:
+	case BACK_RIGHT_MOTOR_ID:
 		data.front_right_motor = motorData;
 		data.has_front_right_motor = true;
 		break;
