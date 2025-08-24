@@ -33,7 +33,6 @@ void Motors::sendMotorCommands(BurtCan<Can1> &can) {
 }
 
 
-
 void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
   // The motor sends an 8-byte payload:
   DriveMotorData motorData;
@@ -55,7 +54,7 @@ void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
   uint8_t error_code = static_cast<int8_t>(Data[7]);
 
   // Max Error code is 7
-  motorData.error = (MotorErrorCode) (error_code <= 7 ? error_code : 7);
+  motorData.error = static_cast<MotorErrorCode>(error_code <= 7 ? error_code : 7);
 
   switch (id) { //Set motorData to current field
   case leftMotor1:
