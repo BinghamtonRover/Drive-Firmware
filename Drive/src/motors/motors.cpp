@@ -32,12 +32,9 @@ void Motors::sendMotorCommands(BurtCan<Can1> &can) {
   can.sendRaw(rightMotor3, rightBuffer, 4);
 }
 
-
 void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
   // The motor sends an 8-byte payload:
   DriveMotorData motorData;
-  // Set Data Container Id to motor Id
-  motorData.Id = id & 0xFF;
   // - Position as a signed, 16-bit integer on bytes 0 and 1, unused
   // - Speed as a signed, 16-bit integer on bytes 2 and 3, multiplied by 10
   int16_t speed_int = static_cast<int16_t>((Data[2] << 8) | Data[3]);
@@ -56,7 +53,9 @@ void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
   // Max Error code is 7
   motorData.error = static_cast<MotorErrorCode>(error_code <= 7 ? error_code : 7);
 
-  switch (id) { //Set motorData to current field
+  int command_id = (id | 0x03<<8); //Convert CAN ID read back to each motor's command ID
+
+  switch (command_id) { //Set motorData to current field
   case leftMotor1:
     data.back_left_motor = motorData;
     data.has_back_left_motor = true;
