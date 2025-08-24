@@ -10,7 +10,7 @@
 #define DATA_SEND_INTERVAL 50  // ms
 #define MOTOR_UPDATE_INTERVAL 10  // ms
 
-const Version version = {major: 1, minor: 1};
+const Version version = {major: 1, minor: 2};
 
 const int errorPin = 9;
 
