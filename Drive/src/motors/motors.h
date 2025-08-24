@@ -3,12 +3,12 @@
 
 const int maxRpm = 40'000;
 
-const uint8_t leftMotor1 = 0x06;
-const uint8_t leftMotor2 = 0x07;
-const uint8_t leftMotor3 = 0x01;
-const uint8_t rightMotor1 = 0x03;
-const uint8_t rightMotor2 = 0x08;
-const uint8_t rightMotor3 = 0x04;
+const uint8_t leftMotor1 = 2;
+const uint8_t leftMotor2 = 5;
+const uint8_t leftMotor3 = 12;
+const uint8_t rightMotor1 = 13;
+const uint8_t rightMotor2 = 10;
+const uint8_t rightMotor3 = 11;
 
 /// A wrapper class to control all the motors.
 ///
