@@ -62,7 +62,7 @@ class Motors {
     void setup();
 
     /// Sends CAN commands to each motor to reflect the current speed and throttle.
-    void sendMotorCommands(BurtCan<Can1> &can);
+    void sendMotorCommands(BurtCan<Can1>& can);
 
     /// Parses and records output from a given motor.
     void handleMotorOutput(const CanMessage& message);
