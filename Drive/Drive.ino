@@ -36,7 +36,6 @@ void setup() {
 	Serial.begin(9600);
 	Serial.println("Initializing Drive subsystem");
 	Serial.println("Initializing software...");
-	roverCan.setup();
 	motorCan.setup();
 	serial.setup();
 	dataTimer.setup();
@@ -56,7 +55,6 @@ void setup() {
 
 void loop() {
 	serial.update();
-	roverCan.update();
 	motorCan.update();
 	dataTimer.update();
 	motorTimer.update();
