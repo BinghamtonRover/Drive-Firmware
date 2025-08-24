@@ -34,15 +34,16 @@ BurtTimer blinkTimer(blinkInterval, updateLedStrip);
 void setup() {
   pinMode(errorPin, OUTPUT);
 	Serial.begin(9600);
-  // Serial.println("Initializing Drive subsystem");
-  // Serial.println("Initializing software...");
+	Serial.println("Initializing Drive subsystem");
+	Serial.println("Initializing software...");
 	roverCan.setup();
 	motorCan.setup();
 	serial.setup();
 	dataTimer.setup();
 	motorTimer.setup();
 	blinkTimer.setup();
-	// Serial.println("Initializing hardware...");
+
+	Serial.println("Initializing hardware...");
 	motors.setup();
 	buttons.setup();
 	cameras.setup();
