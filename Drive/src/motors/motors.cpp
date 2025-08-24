@@ -38,21 +38,21 @@ void Motors::handleMotorOutput(uint32_t id, const uint8_t* Data, int length) {
   // The motor sends an 8-byte payload:
   DriveMotorData motorData;
   // Set Data Container Id to motor Id
-  motorData.Id = id;
+  motorData.Id = id & 0xFF;
   // - Position as a signed, 16-bit integer on bytes 0 and 1, unused
   // - Speed as a signed, 16-bit integer on bytes 2 and 3, multiplied by 10
-  int16_t speed_int = (Data[2] << 8) | Data[3];
+  int16_t speed_int = static_cast<int16_t>((Data[2] << 8) | Data[3]);
   motorData.speed = speed_int * 10.0;
 
   // - Current as a signed, 16-bit integer on bytes 4 and 5, multipled by 0.01
-  int16_t current_int = (Data[4] << 8) | Data[5];
+  int16_t current_int = static_cast<int16_t>(Data[4] << 8) | Data[5];
   motorData.current = current_int * 0.01;
 
-  // - Temperature as a signed, 8-byte integer on byte 6
-  motorData.temperature = Data[6];
+  // - Temperature as a signed, 8-bit integer on byte 6
+  motorData.temperature = static_cast<int16_t>(Data[6]);
 
   // Extract motor error code
-  uint8_t error_code = Data[7];
+  uint8_t error_code = static_cast<int8_t>(Data[7]);
 
   // Max Error code is 7
   motorData.error = (MotorErrorCode) (error_code <= 7 ? error_code : 7);

@@ -35,7 +35,6 @@ void setup() {
   pinMode(errorPin, OUTPUT);
 	Serial.begin(9600);
   // Serial.println("Initializing Drive subsystem");
-
   // Serial.println("Initializing software...");
 	roverCan.setup();
 	motorCan.setup();
@@ -43,20 +42,18 @@ void setup() {
 	dataTimer.setup();
 	motorTimer.setup();
 	blinkTimer.setup();
-
 	// Serial.println("Initializing hardware...");
 	motors.setup();
 	buttons.setup();
 	cameras.setup();
 	led_strip.setup();
 	voltageSensor.setup();
-
   // Serial.println("Drive subsystem initialized");
 }
 
 void loop() {
-	// serial.update();
-	// roverCan.update();
+	serial.update();
+	roverCan.update();
 	buttons.update();
 	voltageSensor.update();
 	motorCan.update();
