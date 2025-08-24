@@ -47,7 +47,7 @@ class Motors {
 
   public:
     /// The current state of the motors.
-    DriveData data;
+    DriveData data = DriveData_init_zero;
 
     /// How fast the left wheels are driving, as a percentage of #throttle (range [0, 1]).
     float left = 0;
