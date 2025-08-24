@@ -1,14 +1,5 @@
 #include "motors.h"
 
-const int maxRpm = 40'000;
-
-const int leftMotor1 = 0x302;
-const int leftMotor2 = 0x305;
-const int leftMotor3 = 0x30c;
-const int rightMotor1 = 0x30d;
-const int rightMotor2 = 0x30a;
-const int rightMotor3 = 0x30b;
-
 void Motors::updateBuffer(float speed, uint8_t* buffer) {
   int adjusted = maxRpm * throttle * speed;
 	if (abs(adjusted) < 5) adjusted = 0;
