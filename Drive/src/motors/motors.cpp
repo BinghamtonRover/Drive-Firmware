@@ -42,7 +42,7 @@ void Motors::handleMotorOutput(uint32_t id, const uint8_t* rawData, int length) 
 	uint8_t errorCode = rawData[7];
 
 	// Max Error code is 7
-	motorData.error = static_cast<MotorErrorCode>(errorCode <= 7 ? error_code : 7);
+	motorData.error = static_cast<MotorErrorCode>(errorCode <= 7 ? errorCode : 7);
 
 	// Set motorData to current field
 	switch (id & 0xFF) {
