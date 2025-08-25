@@ -1,12 +1,14 @@
 #include "motors.h"
 
 void Motors::updateBuffer(float speed, uint8_t* buffer) {
-  int adjusted = maxRpm * throttle * speed;
-	if (abs(adjusted) < 5) adjusted = 0;
-  buffer[0] = (adjusted & 0xFF000000) >> 24;
-  buffer[1] = (adjusted & 0x00FF0000) >> 16;
-  buffer[2] = (adjusted & 0x0000FF00) >> 8;
-  buffer[3] = (adjusted & 0x000000FF);
+	int adjusted = maxRpm * throttle * speed;
+	if (abs(adjusted) < 5) {
+		adjusted = 0;
+	}
+	buffer[0] = (adjusted & 0xFF000000) >> 24;
+	buffer[1] = (adjusted & 0x00FF0000) >> 16;
+	buffer[2] = (adjusted & 0x0000FF00) >> 8;
+	buffer[3] = (adjusted & 0x000000FF);
 }
 
 void Motors::updateBuffers() {
@@ -14,18 +16,31 @@ void Motors::updateBuffers() {
 	updateBuffer(right, rightBuffer);
 }
 
-void Motors::sendMotorCommands(BurtCan<Can1> &can) {
-  can.sendRaw((0x30 << 8) | leftMotor1, leftBuffer, 4);
-  can.sendRaw((0x30 << 8) | leftMotor2, leftBuffer, 4);
-  can.sendRaw((0x30 << 8) | leftMotor3, leftBuffer, 4);
-  can.sendRaw((0x30 << 8) | rightMotor1, rightBuffer, 4);
-  can.sendRaw((0x30 << 8) | rightMotor2, rightBuffer, 4);
-  can.sendRaw((0x30 << 8) | rightMotor3, rightBuffer, 4);
+void Motors::sendMotorCommands(BurtCan<Can1>& can) {
+	// Set speed RPM
+	static const uint8_t commandID = 3;
+	can.sendRaw(FRONT_LEFT_MOTOR_ID | (commandID << 8), leftBuffer, 4);
+	can.sendRaw(MIDDLE_LEFT_MOTOR_ID | (commandID << 8), leftBuffer, 4);
+	can.sendRaw(BACK_LEFT_MOTOR_ID | (commandID << 8), leftBuffer, 4);
+	can.sendRaw(FRONT_RIGHT_MOTOR_ID | (commandID << 8), rightBuffer, 4);
+	can.sendRaw(MIDDLE_RIGHT_MOTOR_ID | (commandID << 8), rightBuffer, 4);
+	can.sendRaw(BACK_RIGHT_MOTOR_ID | (commandID << 8), rightBuffer, 4);
 }
 
-void Motors::handleMotorOutput(uint32_t id, const uint8_t* rawData, int length) {
+void Motors::handleMotorOutput(const CanMessage& message) {
+	if ((message.id & 0xFF00) >> 8 != 0x29) {
+		// ID is not a motor output
+		return;
+	}
+	if (message.len < 8) {
+		// Message is not long enough to contain motor data
+		return;
+	}
 	// The motor sends an 8-byte payload:
 	DriveMotorData motorData = DriveMotorData_init_zero;
+
+	const uint8_t* rawData = message.buf;
+
 	// - Position as a signed, 16-bit integer on bytes 0 and 1, unused
 	// - Speed as a signed, 16-bit integer on bytes 2 and 3, multiplied by 10
 	int16_t speedInt = static_cast<int16_t>((rawData[2] << 8) | rawData[3]);
@@ -45,28 +60,28 @@ void Motors::handleMotorOutput(uint32_t id, const uint8_t* rawData, int length) 
 	motorData.error = static_cast<MotorErrorCode>(errorCode <= 7 ? errorCode : 7);
 
 	// Set motorData to current field
-	switch (id & 0xFF) {
-	case leftMotor1:
+	switch (message.id & 0xFF) {
+	case FRONT_LEFT_MOTOR_ID:
 		data.back_left_motor = motorData;
 		data.has_back_left_motor = true;
 		break;
-	case leftMotor2:
+	case MIDDLE_LEFT_MOTOR_ID:
 		data.middle_left_motor = motorData;
 		data.has_middle_left_motor = true;
 		break;
-	case leftMotor3:
+	case BACK_LEFT_MOTOR_ID:
 		data.front_left_motor = motorData;
 		data.has_front_left_motor = true;
 		break;
-	case rightMotor1:
+	case FRONT_RIGHT_MOTOR_ID:
 		data.back_right_motor = motorData;
 		data.has_back_right_motor = true;
 		break;
-	case rightMotor2:
+	case MIDDLE_RIGHT_MOTOR_ID:
 		data.middle_right_motor = motorData;
 		data.has_middle_right_motor = true;
 		break;
-	case rightMotor3:
+	case BACK_RIGHT_MOTOR_ID:
 		data.front_right_motor = motorData;
 		data.has_front_right_motor = true;
 		break;
@@ -84,9 +99,9 @@ void Motors::setup() {
 
 void Motors::handleCommand(DriveCommand command) {
 	if (command.set_throttle) {
-    throttle = command.throttle;
-    data.throttle = command.throttle;
-  }
+		throttle = command.throttle;
+		data.throttle = command.throttle;
+	}
 	if (command.set_left) {
 		left = command.left;
 		data.left = command.left;
@@ -95,7 +110,7 @@ void Motors::handleCommand(DriveCommand command) {
 		right = command.right;
 		data.right = command.right;
 	}
-  updateBuffers();
+	updateBuffers();
 }
 
 void Motors::stop() {

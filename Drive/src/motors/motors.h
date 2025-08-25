@@ -3,12 +3,12 @@
 
 const int maxRpm = 40'000;
 
-const uint8_t leftMotor1 = 2;
-const uint8_t leftMotor2 = 5;
-const uint8_t leftMotor3 = 12;
-const uint8_t rightMotor1 = 13;
-const uint8_t rightMotor2 = 10;
-const uint8_t rightMotor3 = 11;
+#define FRONT_LEFT_MOTOR_ID 2
+#define MIDDLE_LEFT_MOTOR_ID 5
+#define BACK_LEFT_MOTOR_ID 12
+#define FRONT_RIGHT_MOTOR_ID 13
+#define MIDDLE_RIGHT_MOTOR_ID 10
+#define BACK_RIGHT_MOTOR_ID 11
 
 /// A wrapper class to control all the motors.
 ///
@@ -47,7 +47,7 @@ class Motors {
 
   public:
     /// The current state of the motors.
-    DriveData data;
+    DriveData data = DriveData_init_zero;
 
     /// How fast the left wheels are driving, as a percentage of #throttle (range [0, 1]).
     float left = 0;
@@ -62,10 +62,10 @@ class Motors {
     void setup();
 
     /// Sends CAN commands to each motor to reflect the current speed and throttle.
-    void sendMotorCommands(BurtCan<Can1> &can);
+    void sendMotorCommands(BurtCan<Can1>& can);
 
     /// Parses and records output from a given motor.
-    void handleMotorOutput(uint32_t id, const uint8_t* data, int length);
+    void handleMotorOutput(const CanMessage& message);
 
     /// Handles a command to change speeds from the Dashboard.
     void handleCommand(DriveCommand command);
