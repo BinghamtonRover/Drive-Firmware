@@ -13,6 +13,15 @@
 #endif
 
 /* Enum definitions */
+typedef enum _DriveMotor {
+    DriveMotor_FRONT_LEFT = 0,
+    DriveMotor_FRONT_RIGHT = 1,
+    DriveMotor_MIDDLE_LEFT = 3,
+    DriveMotor_MIDDLE_RIGHT = 4,
+    DriveMotor_BACK_LEFT = 5,
+    DriveMotor_BACK_RIGHT = 6
+} DriveMotor;
+
 typedef enum _ProtoColor {
     ProtoColor_PROTO_COLOR_UNDEFINED = 0,
     ProtoColor_RED = 1,
@@ -110,6 +119,10 @@ extern "C" {
 #endif
 
 /* Helper constants for enums */
+#define _DriveMotor_MIN DriveMotor_FRONT_LEFT
+#define _DriveMotor_MAX DriveMotor_BACK_RIGHT
+#define _DriveMotor_ARRAYSIZE ((DriveMotor)(DriveMotor_BACK_RIGHT+1))
+
 #define _ProtoColor_MIN ProtoColor_PROTO_COLOR_UNDEFINED
 #define _ProtoColor_MAX ProtoColor_UNLIT
 #define _ProtoColor_ARRAYSIZE ((ProtoColor)(ProtoColor_UNLIT+1))
