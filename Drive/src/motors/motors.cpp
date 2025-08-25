@@ -61,29 +61,29 @@ void Motors::handleMotorOutput(const CanMessage& message) {
 
 	// Set motorData to current field
 	switch (message.id & 0xFF) {
-	case BACK_LEFT_MOTOR_ID:
-		data.back_left_motor = motorData;
-		data.has_back_left_motor = true;
+	case FRONT_LEFT_MOTOR_ID:
+		data.front_left_motor = motorData;
+		data.has_front_left_motor = true;
 		break;
 	case MIDDLE_LEFT_MOTOR_ID:
 		data.middle_left_motor = motorData;
 		data.has_middle_left_motor = true;
 		break;
-	case FRONT_LEFT_MOTOR_ID:
-		data.front_left_motor = motorData;
-		data.has_front_left_motor = true;
+	case BACK_LEFT_MOTOR_ID:
+		data.back_left_motor = motorData;
+		data.has_back_left_motor = true;
 		break;
-	case BACK_RIGHT_MOTOR_ID:
-		data.back_right_motor = motorData;
-		data.has_back_right_motor = true;
+	case FRONT_RIGHT_MOTOR_ID:
+		data.front_right_motor = motorData;
+		data.has_front_right_motor = true;
 		break;
 	case MIDDLE_RIGHT_MOTOR_ID:
 		data.middle_right_motor = motorData;
 		data.has_middle_right_motor = true;
 		break;
-	case FRONT_RIGHT_MOTOR_ID:
-		data.front_right_motor = motorData;
-		data.has_front_right_motor = true;
+	case BACK_RIGHT_MOTOR_ID:
+		data.back_right_motor = motorData;
+		data.has_back_right_motor = true;
 		break;
 	default:
 		// Unknown motor ID
