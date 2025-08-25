@@ -21,6 +21,10 @@ void handleMotorOutput(const CanMessage& message) {
 }
 
 BurtSerial serial(Device::Device_DRIVE, handleCommand, DriveData_fields, DriveData_size);
+
+// AK motors send data in the format (0x29 << 8) | MOTOR_ID
+// Since we want to capture data from all the motors, the filter is set to include
+// all commands starting with the ID 0x2900 (not including motor ID 0)
 BurtCan<Can1> motorCan(0x2901, 0x29FF, handleMotorOutput, true);
 
 void sendData();
