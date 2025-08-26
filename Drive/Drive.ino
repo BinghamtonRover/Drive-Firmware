@@ -1,4 +1,4 @@
-#include <Servo.h>
+// #include <Servo.h>
 
 #include "pinouts.h"
 #include "src/utils/BURT_utils.h"
@@ -7,17 +7,28 @@
 #define DRIVE_COMMAND_ID   0x53
 #define DRIVE_DATA_ID      0x14
 
-#define DATA_SEND_INTERVAL 250  // ms
-#define MOTOR_UPDATE_INTERVAL 0  // ms
+#define DATA_SEND_INTERVAL 50  // ms
+#define MOTOR_UPDATE_INTERVAL 10  // ms
 
-const Version version = {major: 1, minor: 1};
+const Version version = {major: 1, minor: 2};
+
+const int errorPin = 9;
 
 void handleCommand(const uint8_t* data, int length);
-void handleMotorOutput(const uint8_t* data, int length) { motors.handleMotorOutput(data, length); }
+
+void handleMotorOutput(const CanMessage& message) {
+  motors.handleMotorOutput(message);
+}
 
 BurtSerial serial(Device::Device_DRIVE, handleCommand, DriveData_fields, DriveData_size);
-BurtCan<Can3> roverCan(DRIVE_COMMAND_ID, handleCommand);
-BurtCan<Can1> motorCan(0, handleMotorOutput, true);
+
+// AK motors send data in the format (0x29 << 8) | MOTOR_ID
+//
+// Since we want to capture data from all the motors, the filter is set to include
+// all commands starting with the ID 0x2900 (not including motor ID 0)
+//
+// AK motors use extended IDs, so the extended frame mailbox is listened to
+BurtCan<Can1> motorCan(0x2901, 0x29FF, handleMotorOutput, true);
 
 void sendData();
 void updateMotors() { motors.sendMotorCommands(motorCan); }
@@ -28,11 +39,10 @@ BurtTimer motorTimer(MOTOR_UPDATE_INTERVAL, updateMotors);
 BurtTimer blinkTimer(blinkInterval, updateLedStrip);
 
 void setup() {
+  pinMode(errorPin, OUTPUT);
 	Serial.begin(9600);
-  Serial.println("Initializing Drive subsystem");
-
-  Serial.println("Initializing software...");
-	roverCan.setup();
+	Serial.println("Initializing Drive subsystem");
+	Serial.println("Initializing software...");
 	motorCan.setup();
 	serial.setup();
 	dataTimer.setup();
@@ -52,14 +62,13 @@ void setup() {
 
 void loop() {
 	serial.update();
-	roverCan.update();
 	motorCan.update();
 	dataTimer.update();
 	motorTimer.update();
 	blinkTimer.update();
+	temperatureSensor.update();
 	buttons.update();
 	voltageSensor.update();
-	temperatureSensor.update();
 }
 
 void sendData() {
