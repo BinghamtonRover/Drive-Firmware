@@ -30,5 +30,4 @@ float CurrentSensor::read()
 void CurrentSensor::update()
 {
     data.battery_current = read();
-    Serial.println(data.battery_current); // test line
 }

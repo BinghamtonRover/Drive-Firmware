@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#include "../relays.pb.h"
+#include "../drive.pb.h"
 
 
 class CurrentSensor {
