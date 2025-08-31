@@ -70,6 +70,7 @@ void loop() {
 	temperatureSensor.update();
 	buttons.update();
 	voltageSensor.update();
+	currentSensor.update();
 }
 
 void sendData() {
@@ -83,6 +84,7 @@ void sendData() {
 	serial.send(&led_strip.data);
 	serial.send(&voltageSensor.data);
 	serial.send(&temperatureSensor.data);
+	serial.send(&currentSensor.data);
 }
 
 void handleCommand(const uint8_t* data, int length) {
