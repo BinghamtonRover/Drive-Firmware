@@ -10,7 +10,7 @@ Buttons buttons;     // see src/button/button.h for pinouts
 Motors motors;       // see src/motors/motors.h for CAN IDs
 Cameras cameras;     // see src/cameras/cameras for pinouts
 LedStrip led_strip;  // see src/led_strip/led_strip for pinouts
-CurrentSensor currentsensor(25);
+CurrentSensor currentSensor(25);
 
 VoltageSensor voltageSensor(41);
 TemperatureSensor temperatureSensor(21);
