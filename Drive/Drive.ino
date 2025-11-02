@@ -100,4 +100,5 @@ void handleCommand(const uint8_t* data, int length) {
 	motors.handleCommand(command);
 	cameras.handleCommand(command);
 	led_strip.handleCommand(command);
+	relays.handleCommand(command);
 }
