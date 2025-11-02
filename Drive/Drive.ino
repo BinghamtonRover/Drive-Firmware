@@ -7,7 +7,7 @@
 #define DRIVE_COMMAND_ID   0x53
 #define DRIVE_DATA_ID      0x14
 
-#define DATA_SEND_INTERVAL 50  // ms
+#define DATA_SEND_INTERVAL 50  // ms (relays was 250 ms, drive was 50ms, so chose the smaller one)
 #define MOTOR_UPDATE_INTERVAL 10  // ms
 
 const Version version = {major: 1, minor: 2};
@@ -38,6 +38,7 @@ BurtTimer dataTimer(DATA_SEND_INTERVAL, sendData);
 BurtTimer motorTimer(MOTOR_UPDATE_INTERVAL, updateMotors);
 BurtTimer blinkTimer(blinkInterval, updateLedStrip);
 
+
 void setup() {
   pinMode(errorPin, OUTPUT);
 	Serial.begin(9600);
@@ -48,6 +49,11 @@ void setup() {
 	dataTimer.setup();
 	motorTimer.setup();
 	blinkTimer.setup();
+
+	relays.setup();
+	voltageSensor.setup();
+
+	Serial.println("Drive setup complete")
 
 	Serial.println("Initializing hardware...");
 	motors.setup();
@@ -69,6 +75,7 @@ void loop() {
 	temperatureSensor.update();
 	buttons.update();
 	voltageSensor.update();
+	relays.update();
 }
 
 
@@ -83,6 +90,8 @@ void sendData() {
 	serial.send(&led_strip.data);
 	serial.send(&voltageSensor.data);
 	serial.send(&temperatureSensor.data);
+	serial.send(&relays.data);
+
 }
 
 void handleCommand(const uint8_t* data, int length) {
