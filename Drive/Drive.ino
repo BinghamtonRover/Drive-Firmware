@@ -71,6 +71,7 @@ void loop() {
 	voltageSensor.update();
 }
 
+
 void sendData() {
   DriveData data = DriveData_init_zero;
   data.version = version;
