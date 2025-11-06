@@ -83,7 +83,7 @@ void sendData() {
   DriveData data = DriveData_init_zero;
   data.version = version;
 	data.has_version = true;
-  serial.send(&data);
+ serial.send(&data);
 	serial.send(&buttons.data);
 	serial.send(&motors.data);
 	serial.send(&cameras.data);

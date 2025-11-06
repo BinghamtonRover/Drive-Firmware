@@ -91,10 +91,6 @@ class Relays {
         Relay drive = Relay(driveRelayPin, driveLedPin);
 
     public: 
-        /// @brief The data from each relay to be sent to the dashboard
-        /// ON, OFF, or BOOL_UNDEFINED
-        /// Initialized to BOOL_UNDEFINED for all relays
-        RelaysData data = RelaysData_init_default;
 
         /// @brief Set up the relays by calling the setup() function of each relay
         /// Call this function in the setup() function of the main sketch
