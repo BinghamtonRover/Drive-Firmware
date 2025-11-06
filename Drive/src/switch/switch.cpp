@@ -4,11 +4,7 @@ void Relay::setup() {
     pinMode(relayPin, OUTPUT);
     pinMode(ledPin, OUTPUT);
 }
-//start of FSM
 
-// void Relays.update
-
-//end of FSM
 void Relay::update() {
     if (softwareState) {
         turnOn();
