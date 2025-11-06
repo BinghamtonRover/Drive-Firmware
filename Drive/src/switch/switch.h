@@ -2,7 +2,7 @@
 #define SWITCH_H
 
 #include <Arduino.h>
-#include "../relays.pb.h"
+#include "../drive.pb.h"
 
 /// @brief Define the Teensy pins for the relays [Subject to change]
 // Drive Motors

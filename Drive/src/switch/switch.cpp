@@ -1,4 +1,4 @@
-#include "switch.h"
+#include "./switch.h"
 
 void Relay::setup() {
     pinMode(relayPin, OUTPUT);
