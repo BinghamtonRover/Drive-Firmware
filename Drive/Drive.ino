@@ -53,7 +53,7 @@ void setup() {
 	relays.setup();
 	voltageSensor.setup();
 
-	Serial.println("Drive setup complete")
+	Serial.println("Drive setup complete");
 
 	Serial.println("Initializing hardware...");
 	motors.setup();
@@ -80,7 +80,12 @@ void loop() {
 
 
 void sendData() {
-  DriveData data = DriveData_init_zero;
+  DriveData d_data = DriveData_init_zero;
+  Relaydata r_data = RelayData_init_zero;
+
+  ControlData c_data = ControlData_init_zero;
+
+c_data.relays = r_data;
   data.version = version;
 	data.has_version = true;
  serial.send(&data);
@@ -95,10 +100,11 @@ void sendData() {
 }
 
 void handleCommand(const uint8_t* data, int length) {
-	auto command = BurtProto::decode<DriveCommand>(data, length, DriveCommand_fields);
-	buttons.handleCommand(command);
-	motors.handleCommand(command);
-	cameras.handleCommand(command);
-	led_strip.handleCommand(command);
-	relays.handleCommand(command);
+	auto command = BurtProto::decode<ControlCommand>(data, length, ControlCommand_fields);
+	buttons.handleCommand(command.Drive);
+	motors.handleCommand(command.Drive);
+	cameras.handleCommand(command.Drive);
+	led_strip.handleCommand(command.Drive);
+
+	relays.handleCommand(command.Relays);
 }
