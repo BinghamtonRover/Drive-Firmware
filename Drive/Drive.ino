@@ -20,7 +20,7 @@ void handleMotorOutput(const CanMessage& message) {
   motors.handleMotorOutput(message);
 }
 
-BurtSerial serial(Device::Device_CONTROL, handleCommand, ControlBoardData_fields, ControlBoardData_size);
+BurtSerial serial(Device::Device_CONTROL_BOARD, handleCommand, ControlBoardData_fields, ControlBoardData_size);
 
 // AK motors send data in the format (0x29 << 8) | MOTOR_ID
 //
