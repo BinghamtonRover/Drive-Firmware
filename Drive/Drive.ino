@@ -2,7 +2,7 @@
 
 #include "pinouts.h"
 #include "src/utils/BURT_utils.h"
-#include "src/control.pb.h"
+#include "src/control_board.pb.h"
 
 #define DRIVE_COMMAND_ID   0x53
 #define DRIVE_DATA_ID      0x14
@@ -20,7 +20,7 @@ void handleMotorOutput(const CanMessage& message) {
   motors.handleMotorOutput(message);
 }
 
-BurtSerial serial(Device::Device_DRIVE, handleCommand, DriveData_fields, DriveData_size);
+BurtSerial serial(Device::Device_CONTROL, handleCommand, ControlBoardData_fields, ControlBoardData_size);
 
 // AK motors send data in the format (0x29 << 8) | MOTOR_ID
 //
@@ -83,9 +83,9 @@ void sendData() {
   DriveData d_data = DriveData_init_zero;
   Relaydata r_data = RelayData_init_zero;
 
-  ControlData c_data = ControlData_init_zero;
+  ControlBoardData c_data = ControlBoardData_init_zero;
 
-c_data.relays = r_data;
+  c_data.relays = r_data;
   data.version = version;
 	data.has_version = true;
  serial.send(&data);
@@ -100,7 +100,7 @@ c_data.relays = r_data;
 }
 
 void handleCommand(const uint8_t* data, int length) {
-	auto command = BurtProto::decode<ControlCommand>(data, length, ControlCommand_fields);
+	auto command = BurtProto::decode<ControlBoardCommand>(data, length, ControlBoardCommand_fields);
 	buttons.handleCommand(command.Drive);
 	motors.handleCommand(command.Drive);
 	cameras.handleCommand(command.Drive);
