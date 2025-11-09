@@ -2,7 +2,7 @@
 
 #include "pinouts.h"
 #include "src/utils/BURT_utils.h"
-#include "src/drive.pb.h"
+#include "src/control.pb.h"
 
 #define DRIVE_COMMAND_ID   0x53
 #define DRIVE_DATA_ID      0x14
