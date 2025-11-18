@@ -53,7 +53,6 @@ void setup() {
 	relays.setup();
 	voltageSensor.setup();
 
-	Serial.println("Drive setup complete");
 
 	Serial.println("Initializing hardware...");
 	motors.setup();

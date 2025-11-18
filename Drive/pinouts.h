@@ -7,7 +7,7 @@
 #include "src/cameras/cameras.h"
 #include "src/voltage/voltage.h"
 #include "src/temperature/temperature.h"
-#include "src/switch/switch.h"
+#include "src/relays/relays.h"
 
 Relays relays;
 
