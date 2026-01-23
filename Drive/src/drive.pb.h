@@ -111,6 +111,7 @@ typedef struct _DriveData {
     DriveMotorData middle_right_motor;
     bool has_back_right_motor;
     DriveMotorData back_right_motor;
+    uint32_t cliff_distance;
 } DriveData;
 
 
@@ -144,10 +145,10 @@ extern "C" {
 /* Initializer values for message structs */
 #define DriveCommand_init_default                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_default, _ProtoColor_MIN, _BoolState_MIN}
 #define DriveMotorData_init_default              {0, 0, 0, _MotorErrorCode_MIN}
-#define DriveData_init_default                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_default, _ProtoColor_MIN, _RoverStatus_MIN, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default}
+#define DriveData_init_default                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_default, _ProtoColor_MIN, _RoverStatus_MIN, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default, false, DriveMotorData_init_default, 0}
 #define DriveCommand_init_zero                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _RoverStatus_MIN, false, Version_init_zero, _ProtoColor_MIN, _BoolState_MIN}
 #define DriveMotorData_init_zero                 {0, 0, 0, _MotorErrorCode_MIN}
-#define DriveData_init_zero                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_zero, _ProtoColor_MIN, _RoverStatus_MIN, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero}
+#define DriveData_init_zero                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, Version_init_zero, _ProtoColor_MIN, _RoverStatus_MIN, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, false, DriveMotorData_init_zero, 0}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define DriveCommand_throttle_tag                1
@@ -190,6 +191,7 @@ extern "C" {
 #define DriveData_front_right_motor_tag          26
 #define DriveData_middle_right_motor_tag         27
 #define DriveData_back_right_motor_tag           28
+#define DriveData_cliff_distance_tag             29
 
 /* Struct field encoding specification for nanopb */
 #define DriveCommand_FIELDLIST(X, a) \
@@ -241,7 +243,8 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  middle_left_motor,  24) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  back_left_motor,  25) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  front_right_motor,  26) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  middle_right_motor,  27) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  back_right_motor,  28)
+X(a, STATIC,   OPTIONAL, MESSAGE,  back_right_motor,  28) \
+X(a, STATIC,   SINGULAR, UINT32,   cliff_distance,   29)
 #define DriveData_CALLBACK NULL
 #define DriveData_DEFAULT NULL
 #define DriveData_version_MSGTYPE Version
@@ -264,7 +267,7 @@ extern const pb_msgdesc_t DriveData_msg;
 /* Maximum encoded size of messages (where known) */
 #define DRIVE_PB_H_MAX_SIZE                      DriveData_size
 #define DriveCommand_size                        71
-#define DriveData_size                           242
+#define DriveData_size                           249
 #define DriveMotorData_size                      23
 
 #ifdef __cplusplus
